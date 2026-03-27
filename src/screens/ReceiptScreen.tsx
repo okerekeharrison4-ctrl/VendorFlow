@@ -8,6 +8,7 @@ import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useAdSystem } from '../hooks/useAdSystem';
 import { MockAdVideo } from '../components/MockAdVideo';
+import { track } from '../utils/analytics';
 
 export const ReceiptScreen = () => {
   const { getInvoice, currency, theme } = useStore();
@@ -18,8 +19,9 @@ export const ReceiptScreen = () => {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [removeWatermark, setRemoveWatermark] = useState(false);
   const [showAd, setShowAd] = useState(false);
+  const [showRewardPrompt, setShowRewardPrompt] = useState(false);
   
-  const { isOnline, markRewarded, hasRewarded } = useAdSystem();
+  const { isOnline, markRewarded, hasRewarded, rewardedAdsWatchedThisSession } = useAdSystem();
   
   const invoice = getInvoice(id || '');
 
@@ -28,6 +30,17 @@ export const ReceiptScreen = () => {
       setRemoveWatermark(true);
     }
   }, [invoice, hasRewarded]);
+
+  useEffect(() => {
+    // Micro-delay before showing reward prompt
+    const timer = setTimeout(() => {
+      setShowRewardPrompt(true);
+      if (isOnline && !removeWatermark) {
+        track('reward_prompt_shown', { type: 'receipt', id: invoice?.id });
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [isOnline, removeWatermark, invoice?.id]);
 
   if (!invoice) {
     return <div className="p-6 text-center">Receipt not found</div>;
@@ -277,20 +290,41 @@ export const ReceiptScreen = () => {
       </div>
 
       <div className="w-full max-w-md mt-4 space-y-4">
-        {isOnline && !removeWatermark && (
-          <div className="bg-surface-low rounded-2xl p-4 flex items-center justify-between">
-            <span className="text-sm font-medium text-on-surface">Download clean receipt</span>
-            <button 
-              onClick={() => setShowAd(true)}
-              className="text-sm font-bold text-primary flex items-center gap-1 active:opacity-70 transition-opacity"
+        <AnimatePresence>
+          {isOnline && !removeWatermark && showRewardPrompt && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="bg-surface-low rounded-2xl p-4 flex items-center justify-between"
             >
-              Watch video
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </button>
-          </div>
-        )}
+              <span className="text-sm font-medium text-on-surface">Send a clean receipt to your customer</span>
+              <button 
+                onClick={() => {
+                  track('reward_clicked', { type: 'receipt', id: invoice?.id });
+                  setShowAd(true);
+                }}
+                className="text-sm font-bold text-primary flex items-center gap-1 active:opacity-70 transition-opacity"
+              >
+                Watch video
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </motion.div>
+          )}
+          {removeWatermark && rewardedAdsWatchedThisSession >= 3 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+              className="text-center"
+            >
+              <p className="text-xs text-on-surface-variant italic">You can always send clean invoices faster</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
         <button 
           onClick={() => setShowShareMenu(true)}
           disabled={isSharing}
@@ -316,6 +350,7 @@ export const ReceiptScreen = () => {
             markRewarded('receipt', invoice.id);
             setRemoveWatermark(true);
           }}
+          successMessage="Your receipt is ready"
         />
       )}
 

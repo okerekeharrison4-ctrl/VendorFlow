@@ -8,6 +8,7 @@ import { toPng } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useAdSystem } from '../hooks/useAdSystem';
 import { MockAdVideo } from '../components/MockAdVideo';
+import { track } from '../utils/analytics';
 
 export const PreviewScreen = () => {
   const { getInvoice, currency, markAsPaid, theme } = useStore();
@@ -18,8 +19,9 @@ export const PreviewScreen = () => {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [removeWatermark, setRemoveWatermark] = useState(false);
   const [showAd, setShowAd] = useState(false);
+  const [showRewardPrompt, setShowRewardPrompt] = useState(false);
   
-  const { isOnline, markRewarded, hasRewarded } = useAdSystem();
+  const { isOnline, markRewarded, hasRewarded, rewardedAdsWatchedThisSession } = useAdSystem();
   
   const invoice = getInvoice(id || '');
 
@@ -28,6 +30,17 @@ export const PreviewScreen = () => {
       setRemoveWatermark(true);
     }
   }, [invoice, hasRewarded]);
+
+  useEffect(() => {
+    // Micro-delay before showing reward prompt
+    const timer = setTimeout(() => {
+      setShowRewardPrompt(true);
+      if (isOnline && !removeWatermark) {
+        track('reward_prompt_shown', { type: 'invoice', id: invoice?.id });
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [isOnline, removeWatermark, invoice?.id]);
 
   if (!invoice) {
     return <div className="p-6 text-center">Invoice not found</div>;
@@ -313,20 +326,41 @@ export const PreviewScreen = () => {
 
       <div className="fixed bottom-0 left-0 w-full bg-surface-lowest border-t border-outline-variant/10 p-6 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-40">
         <div className="max-w-3xl mx-auto space-y-4">
-          {isOnline && !removeWatermark && (
-            <div className="bg-surface-low rounded-2xl p-4 flex items-center justify-between">
-              <span className="text-sm font-medium text-on-surface">Remove watermark</span>
-              <button 
-                onClick={() => setShowAd(true)}
-                className="text-sm font-bold text-primary flex items-center gap-1 active:opacity-70 transition-opacity"
+          <AnimatePresence>
+            {isOnline && !removeWatermark && showRewardPrompt && (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="bg-surface-low rounded-2xl p-4 flex items-center justify-between"
               >
-                Watch short video
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </button>
-            </div>
-          )}
+                <span className="text-sm font-medium text-on-surface">Make it look more professional</span>
+                <button 
+                  onClick={() => {
+                    track('reward_clicked', { type: 'invoice', id: invoice?.id });
+                    setShowAd(true);
+                  }}
+                  className="text-sm font-bold text-primary flex items-center gap-1 active:opacity-70 transition-opacity"
+                >
+                  Watch short video
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </button>
+              </motion.div>
+            )}
+            {removeWatermark && rewardedAdsWatchedThisSession >= 3 && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1 }}
+                className="text-center"
+              >
+                <p className="text-xs text-on-surface-variant italic">You can always send clean invoices faster</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
           <div className="flex gap-4">
             <button 
               onClick={handleMarkPaid}
@@ -355,6 +389,7 @@ export const PreviewScreen = () => {
             markRewarded('invoice', invoice.id);
             setRemoveWatermark(true);
           }}
+          successMessage="Your invoice is ready to send"
         />
       )}
 

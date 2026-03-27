@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { track } from '../utils/analytics';
 
 interface AdState {
   lastOpenTime: number;
@@ -6,13 +7,18 @@ interface AdState {
   interstitialDate: string;
   rewardedInvoices: string[];
   rewardedReceipts: string[];
+  sessionCount: number;
 }
 
 const getInitialAdState = (): AdState => {
   const stored = localStorage.getItem('vendorflow_ads');
   if (stored) {
     try {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      return {
+        ...parsed,
+        sessionCount: parsed.sessionCount || 1,
+      };
     } catch (e) {}
   }
   return {
@@ -21,12 +27,14 @@ const getInitialAdState = (): AdState => {
     interstitialDate: new Date().toDateString(),
     rewardedInvoices: [],
     rewardedReceipts: [],
+    sessionCount: 1,
   };
 };
 
 export const useAdSystem = () => {
   const [adState, setAdState] = useState<AdState>(getInitialAdState);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [rewardedAdsWatchedThisSession, setRewardedAdsWatchedThisSession] = useState(0);
   
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -43,8 +51,35 @@ export const useAdSystem = () => {
     localStorage.setItem('vendorflow_ads', JSON.stringify(adState));
   }, [adState]);
 
+  // Increment session count on mount if it's been a while
+  useEffect(() => {
+    const now = Date.now();
+    const timeSinceLastOpen = now - adState.lastOpenTime;
+    const fourHours = 4 * 60 * 60 * 1000;
+    if (timeSinceLastOpen > fourHours) {
+      setAdState(prev => ({
+        ...prev,
+        sessionCount: prev.sessionCount + 1,
+        lastOpenTime: now,
+      }));
+    }
+  }, []);
+
   const checkAndShowInterstitial = useCallback((): boolean => {
     if (!isOnline) return false;
+    
+    // Interstitial Refinement: Protect first-time user experience
+    const storedInvoices = localStorage.getItem('vendorflow_invoices');
+    let invoiceCount = 0;
+    if (storedInvoices) {
+      try {
+        invoiceCount = JSON.parse(storedInvoices).length;
+      } catch (e) {}
+    }
+
+    if (invoiceCount < 1 && adState.sessionCount < 2) {
+      return false; // Do NOT show interstitial
+    }
     
     const now = Date.now();
     const today = new Date().toDateString();
@@ -67,6 +102,7 @@ export const useAdSystem = () => {
         interstitialCount: currentCount + 1,
         interstitialDate: today
       }));
+      track('interstitial_shown');
       return true;
     }
     
@@ -89,8 +125,6 @@ export const useAdSystem = () => {
           lastOpenTime: Date.now()
         }));
       } else if (document.visibilityState === 'visible') {
-        // We don't call checkAndShowInterstitial directly here because we don't have access to setShowInterstitial from App.tsx.
-        // Instead, we can dispatch a custom event that App.tsx listens to.
         window.dispatchEvent(new Event('vendorflow_foreground'));
       }
     };
@@ -108,6 +142,8 @@ export const useAdSystem = () => {
         : { rewardedReceipts: [...prev.rewardedReceipts, id] }
       )
     }));
+    setRewardedAdsWatchedThisSession(prev => prev + 1);
+    track('reward_completed', { type, id });
   }, []);
 
   const hasRewarded = useCallback((type: 'invoice' | 'receipt', id: string) => {
@@ -120,6 +156,7 @@ export const useAdSystem = () => {
     isOnline,
     checkAndShowInterstitial,
     markRewarded,
-    hasRewarded
+    hasRewarded,
+    rewardedAdsWatchedThisSession
   };
 };

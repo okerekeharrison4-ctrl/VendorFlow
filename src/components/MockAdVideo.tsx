@@ -6,9 +6,10 @@ interface MockAdVideoProps {
   onComplete: () => void;
   onClose: () => void;
   type: 'interstitial' | 'rewarded';
+  successMessage?: string;
 }
 
-export const MockAdVideo: React.FC<MockAdVideoProps> = ({ onComplete, onClose, type }) => {
+export const MockAdVideo: React.FC<MockAdVideoProps> = ({ onComplete, onClose, type, successMessage = 'Reward Granted!' }) => {
   const [timeLeft, setTimeLeft] = useState(type === 'rewarded' ? 5 : 3);
   const [canClose, setCanClose] = useState(false);
   const [rewardGranted, setRewardGranted] = useState(false);
@@ -57,7 +58,7 @@ export const MockAdVideo: React.FC<MockAdVideoProps> = ({ onComplete, onClose, t
               <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center">
                 <CheckCircle2 size={32} strokeWidth={2.5} />
               </div>
-              <h2 className="text-2xl font-black">Reward Granted!</h2>
+              <h2 className="text-2xl font-black">{successMessage}</h2>
               <p className="text-on-surface-variant">You can now close this ad.</p>
               <button 
                 onClick={onClose}
