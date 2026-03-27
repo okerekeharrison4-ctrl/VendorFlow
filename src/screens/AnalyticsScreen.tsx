@@ -73,19 +73,19 @@ export const AnalyticsScreen = () => {
 
       <div className="bg-surface-lowest rounded-[2rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 mb-8">
         <h3 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-6">Revenue Overview</h3>
-        <div className="h-64 w-full min-h-[256px] min-w-0">
+        <div className="h-64 w-full min-h-[256px] min-w-0 flex items-center justify-center">
           {analyticsData.totalRevenue > 0 || analyticsData.totalOutstanding > 0 ? (
-            <ResponsiveContainer width="100%" height="100%" aspect={16 / 9}>
-              <PieChart>
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
                 <Pie
                   data={[
                     { name: 'Paid', value: analyticsData.totalRevenue },
                     { name: 'Outstanding', value: analyticsData.totalOutstanding },
                   ]}
                   cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
+                  cy="45%"
+                  innerRadius={55}
+                  outerRadius={75}
                   paddingAngle={5}
                   dataKey="value"
                 >
@@ -96,7 +96,7 @@ export const AnalyticsScreen = () => {
                   formatter={(value: number) => `${currency.symbol}${value.toLocaleString()}`}
                   contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' }}
                 />
-                <Legend />
+                <Legend verticalAlign="bottom" height={36} />
               </PieChart>
             </ResponsiveContainer>
           ) : (

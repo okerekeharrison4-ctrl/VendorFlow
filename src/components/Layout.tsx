@@ -18,10 +18,10 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pb-24">
+    <div className="w-full max-w-md min-h-screen bg-background flex flex-col pb-24 relative shadow-2xl mx-auto">
       {showHeader && (
-        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md">
-          <div className="flex items-center justify-between px-6 py-5 max-w-3xl mx-auto">
+        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-md border-b border-outline-variant/10">
+          <div className="flex items-center justify-between px-6 py-5">
             <div className="flex items-center gap-4">
               {!isRoot ? (
                 <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-surface-low active:scale-95 transition-all text-on-surface">
@@ -38,7 +38,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
         </header>
       )}
 
-      <main className="flex-1 max-w-3xl w-full mx-auto">
+      <main className="flex-1 w-full px-4 pt-4">
         {children}
       </main>
 
@@ -46,9 +46,9 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
         <motion.nav 
           initial={{ y: 100 }}
           animate={{ y: 0 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-sm z-50 bg-surface-lowest/80 backdrop-blur-2xl border border-outline-variant/20 shadow-[0_20px_40px_rgba(0,0,0,0.1)] rounded-full pb-safe-offset"
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-[calc(28rem-3rem)] z-50 bg-surface-lowest/80 backdrop-blur-2xl border border-outline-variant/20 shadow-[0_20px_40px_rgba(0,0,0,0.1)] rounded-full pb-safe-offset"
         >
-          <div className="flex justify-around items-center px-2 py-2 overflow-x-auto gap-2 no-scrollbar">
+          <div className="flex justify-around items-center px-1 py-1 overflow-x-auto gap-1 no-scrollbar">
             <NavItem 
               icon={<FileText size={22} />} 
               label="Home" 
@@ -92,7 +92,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       {showBottomNav && (
         <button 
           onClick={() => navigate('/create')}
-          className="fixed bottom-28 right-6 md:right-12 w-14 h-14 bg-primary text-on-primary rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50 border-4 border-background"
+          className="fixed bottom-28 left-1/2 translate-x-[140px] w-14 h-14 bg-primary text-on-primary rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all z-50 border-4 border-background"
         >
           <Plus size={28} />
         </button>

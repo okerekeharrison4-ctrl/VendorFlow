@@ -35,7 +35,7 @@ export const MockAdVideo: React.FC<MockAdVideoProps> = ({ onComplete, onClose, t
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[200] bg-surface-lowest flex flex-col items-center justify-center text-on-surface"
+        className="absolute inset-0 z-[200] bg-surface-lowest flex flex-col items-center justify-center text-on-surface"
       >
         {canClose && (
           <button 

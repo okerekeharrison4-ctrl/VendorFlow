@@ -88,58 +88,80 @@ const AppContent = () => {
   }, [theme]);
 
   if (isLoading) {
-    return <div className="fixed inset-0 flex items-center justify-center bg-background">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-[#f0f2f5] flex justify-center">
+        <div className="w-full max-w-md min-h-screen bg-background flex items-center justify-center text-on-surface shadow-2xl">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+            <span className="font-bold tracking-wide">Loading...</span>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!hasCompletedOnboarding) {
-    if (showLanding) {
-      return <LandingScreen onStart={() => setShowLanding(false)} />;
-    }
-    return <OnboardingScreen />;
+    return (
+      <div className="min-h-screen bg-[#f0f2f5] flex justify-center">
+        <div className="w-full max-w-md min-h-screen bg-background relative shadow-2xl overflow-hidden">
+          {showLanding ? (
+            <LandingScreen onStart={() => setShowLanding(false)} />
+          ) : (
+            <OnboardingScreen />
+          )}
+        </div>
+      </div>
+    );
   }
 
   if (showWelcome) {
     return (
-      <AnimatePresence mode="wait">
-        <WelcomeScreen 
-          key="welcome" 
-          onComplete={() => {
-            localStorage.setItem('vendorflow_last_opened', Date.now().toString());
-            setShowWelcome(false);
-          }} 
-        />
-      </AnimatePresence>
+      <div className="min-h-screen bg-[#f0f2f5] flex justify-center">
+        <div className="w-full max-w-md min-h-screen bg-background relative shadow-2xl overflow-hidden">
+          <AnimatePresence mode="wait">
+            <WelcomeScreen 
+              key="welcome" 
+              onComplete={() => {
+                localStorage.setItem('vendorflow_last_opened', Date.now().toString());
+                setShowWelcome(false);
+              }} 
+            />
+          </AnimatePresence>
+        </div>
+      </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-on-surface">
-      <Layout>
-        <AnimatePresence mode="wait">
-          <motion.div key={location.pathname} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <Routes location={location}>
-              <Route path="/" element={<HomeScreen />} />
-              <Route path="/create" element={<CreateInvoiceScreen />} />
-              <Route path="/preview/:id" element={<PreviewScreen />} />
-              <Route path="/debts" element={<DebtListScreen />} />
-              <Route path="/receipt/:id" element={<ReceiptScreen />} />
-              <Route path="/settings" element={<SettingsScreen />} />
-              <Route path="/clients" element={<ClientsScreen />} />
-              <Route path="/catalog" element={<CatalogScreen />} />
-              <Route path="/analytics" element={<AnalyticsScreen />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </motion.div>
-        </AnimatePresence>
-      </Layout>
+    <div className="min-h-screen bg-[#f0f2f5] flex justify-center">
+      <div className="w-full max-w-md min-h-screen bg-background text-on-surface relative shadow-2xl overflow-hidden">
+        <Layout>
+          <AnimatePresence mode="wait">
+            <motion.div key={location.pathname} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <Routes location={location}>
+                <Route path="/" element={<HomeScreen />} />
+                <Route path="/create" element={<CreateInvoiceScreen />} />
+                <Route path="/preview/:id" element={<PreviewScreen />} />
+                <Route path="/debts" element={<DebtListScreen />} />
+                <Route path="/receipt/:id" element={<ReceiptScreen />} />
+                <Route path="/settings" element={<SettingsScreen />} />
+                <Route path="/clients" element={<ClientsScreen />} />
+                <Route path="/catalog" element={<CatalogScreen />} />
+                <Route path="/analytics" element={<AnalyticsScreen />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </motion.div>
+          </AnimatePresence>
+        </Layout>
 
-      {showInterstitial && (
-        <MockAdVideo 
-          type="interstitial" 
-          onClose={() => setShowInterstitial(false)} 
-          onComplete={() => {}} 
-        />
-      )}
+        {showInterstitial && (
+          <MockAdVideo 
+            type="interstitial" 
+            onClose={() => setShowInterstitial(false)} 
+            onComplete={() => {}} 
+          />
+        )}
+      </div>
     </div>
   );
 };

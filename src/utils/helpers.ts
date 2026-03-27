@@ -18,3 +18,16 @@ export const formatDate = (timestamp: number) => {
 export const calculateTotal = (items: { quantity: number; price: number }[]) => {
   return items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
 };
+
+export const isColorDark = (hex: string) => {
+  if (!hex || !hex.startsWith('#')) return false;
+  try {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness < 128;
+  } catch (e) {
+    return false;
+  }
+};

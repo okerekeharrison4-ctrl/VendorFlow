@@ -39,13 +39,29 @@
 }
 
 body {
-  background-color: var(--color-background);
+  background-color: #f0f2f5; /* Contrasting background for desktop view */
   color: var(--color-on-surface);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
 }
 
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

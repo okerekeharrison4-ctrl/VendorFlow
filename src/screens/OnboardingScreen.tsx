@@ -134,7 +134,7 @@ export const OnboardingScreen = () => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-surface-lowest to-surface-low z-50 flex flex-col">
+    <div className="absolute inset-0 bg-gradient-to-br from-surface-lowest to-surface-low z-50 flex flex-col">
       <div className="flex justify-end p-6">
         <button 
           onClick={finishOnboarding}

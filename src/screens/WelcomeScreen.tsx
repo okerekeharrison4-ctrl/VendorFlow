@@ -18,7 +18,7 @@ export const WelcomeScreen = ({ onComplete }: { onComplete: () => void, key?: st
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="fixed inset-0 z-[100] bg-background flex flex-col items-center justify-center"
+      className="absolute inset-0 z-[100] bg-background flex flex-col items-center justify-center"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 10 }}
