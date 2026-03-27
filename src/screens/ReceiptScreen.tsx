@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { formatCurrency, calculateTotal, formatDate } from '../utils/helpers';
 import { motion, AnimatePresence } from 'motion/react';
 import { Share2, CheckCircle2, Home, Loader2 } from 'lucide-react';
-import { toPng, toBlob } from 'html-to-image';
+import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useAdSystem } from '../hooks/useAdSystem';
 import { MockAdVideo } from '../components/MockAdVideo';
@@ -73,7 +73,12 @@ export const ReceiptScreen = () => {
         if (navigator.share) {
           await navigator.share({ title: `Receipt ${invoice.invoiceNumber}`, text });
         } else {
-          alert('Text sharing is not supported on this device.');
+          try {
+            await navigator.clipboard.writeText(text);
+            alert('✅ Message copied to clipboard!');
+          } catch (err) {
+            alert('Sharing is not supported on this device.');
+          }
         }
         return;
       }
@@ -81,19 +86,22 @@ export const ReceiptScreen = () => {
       if (!receiptRef.current) return;
 
       // Small delay to ensure any animations or rendering are finished
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 150));
 
-      const isPdf = action === 'share_pdf' || action === 'download_pdf' || action === 'print';
-      const isWhatsApp = action === 'whatsapp';
-
-      // Use toBlob for better performance and memory management
-      const blob = await toBlob(receiptRef.current, { 
+      // Use toCanvas as it's often more reliable across browsers
+      const canvas = await toCanvas(receiptRef.current, { 
         pixelRatio: 2,
         backgroundColor: '#ffffff',
         cacheBust: true,
       });
 
-      if (!blob) throw new Error('Failed to generate image blob');
+      if (!canvas) throw new Error('Failed to generate canvas');
+
+      const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png', 1.0));
+      if (!blob) throw new Error('Failed to generate blob');
+
+      const isPdf = action === 'share_pdf' || action === 'download_pdf' || action === 'print';
+      const isWhatsApp = action === 'whatsapp';
 
       if (isWhatsApp) {
         const file = new File([blob], `Receipt-${invoice.invoiceNumber}.png`, { type: 'image/png' });
@@ -107,14 +115,20 @@ export const ReceiptScreen = () => {
           }
         } else {
           try {
-            await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+            // Try clipboard first
+            if (navigator.clipboard && window.ClipboardItem) {
+              await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+              alert('✅ Receipt image copied to clipboard!\n\nWhen WhatsApp opens, just paste (Ctrl+V) to attach the image.');
+            } else {
+              downloadFile(file);
+              alert('✅ Receipt downloaded!\n\nPlease attach it in WhatsApp.');
+            }
             const text = encodeURIComponent(`Your receipt is ready, thank you for your payment!`);
-            window.open(`https://web.whatsapp.com/send?text=${text}`, '_blank');
-            alert('✅ Receipt image copied to clipboard!\n\nWhen WhatsApp Web opens, just paste (Ctrl+V or Cmd+V) into the chat to attach the image.');
+            window.open(`https://wa.me/?text=${text}`, '_blank');
           } catch (err) {
             downloadFile(file);
-            const text = encodeURIComponent(`Your receipt is ready, thank you for your payment!\n\n(Please attach the downloaded image)`);
-            window.open(`https://web.whatsapp.com/send?text=${text}`, '_blank');
+            const text = encodeURIComponent(`Your receipt is ready, thank you for your payment!`);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
           }
         }
         return;
@@ -125,36 +139,20 @@ export const ReceiptScreen = () => {
       if (!isPdf) {
         file = new File([blob], `Receipt-${invoice.invoiceNumber}.png`, { type: 'image/png' });
       } else {
-        // Convert blob to dataUrl for jsPDF
-        const reader = new FileReader();
-        const dataUrl = await new Promise<string>((resolve) => {
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(blob);
-        });
-
-        const img = new Image();
-        await new Promise((resolve) => {
-          img.onload = resolve;
-          img.src = dataUrl;
-        });
-
         const pdf = new jsPDF({
-          orientation: img.width > img.height ? 'landscape' : 'portrait',
+          orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
           unit: 'px',
-          format: [img.width, img.height]
+          format: [canvas.width, canvas.height]
         });
         
-        pdf.addImage(dataUrl, 'PNG', 0, 0, img.width, img.height);
+        pdf.addImage(canvas, 'PNG', 0, 0, canvas.width, canvas.height);
         const pdfBlob = pdf.output('blob');
         
         if (action === 'print') {
           const blobUrl = URL.createObjectURL(pdfBlob);
           const printWindow = window.open(blobUrl, '_blank');
-          if (printWindow) {
-            printWindow.onload = () => {
-              printWindow.print();
-            };
-          } else {
+          if (!printWindow) {
+            // Fallback for blocked popups
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.src = blobUrl;
@@ -162,7 +160,7 @@ export const ReceiptScreen = () => {
             iframe.onload = () => {
               setTimeout(() => {
                 iframe.contentWindow?.print();
-              }, 150);
+              }, 200);
             };
           }
           return;
@@ -176,19 +174,18 @@ export const ReceiptScreen = () => {
           try {
             await navigator.share({ files: [file] });
           } catch (err: any) {
-            if (err.name !== 'AbortError') {
-              downloadFile(file);
-            }
+            if (err.name !== 'AbortError') downloadFile(file);
           }
         } else {
           downloadFile(file);
+          alert('Sharing not supported. File has been downloaded to your device.');
         }
       } else {
         downloadFile(file);
       }
     } catch (err) {
       console.error('Action failed', err);
-      alert('Failed to process request. This might be due to device memory or browser restrictions. Please try again or use a different share option.');
+      alert('Failed to process request. Please try again or use a different option.');
     } finally {
       setIsSharing(false);
     }
