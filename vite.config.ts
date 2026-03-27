@@ -13,12 +13,12 @@ export default defineConfig(({mode}) => {
       VitePWA({
         registerType: 'autoUpdate',
         injectRegister: 'auto',
-        includeAssets: ['logo.svg', 'icon-512x512.svg'],
+        includeAssets: ['logo.svg', 'icon-512x512.svg', 'icon-192x192.png', 'icon-512x512.png'],
         manifest: {
-          id: '/',
+          id: 'com.vendorflow.app',
           name: 'VendorFlow',
           short_name: 'VendorFlow',
-          description: 'Create, manage, and share professional invoices and receipts.',
+          description: 'Create, manage, and share professional invoices and receipts with ease. Optimized for small businesses and freelancers.',
           categories: ['finance', 'business', 'productivity'],
           dir: 'ltr',
           lang: 'en-US',
@@ -26,7 +26,7 @@ export default defineConfig(({mode}) => {
           theme_color: '#000000',
           background_color: '#ffffff',
           display: 'standalone',
-          orientation: 'portrait',
+          orientation: 'any',
           scope: '/',
           start_url: '/',
           icons: [
@@ -45,12 +45,14 @@ export default defineConfig(({mode}) => {
             {
               src: '/icon-192x192.png',
               sizes: '192x192',
-              type: 'image/png'
+              type: 'image/png',
+              purpose: 'any'
             },
             {
               src: '/icon-512x512.png',
               sizes: '512x512',
-              type: 'image/png'
+              type: 'image/png',
+              purpose: 'maskable'
             }
           ],
           screenshots: [
@@ -59,14 +61,14 @@ export default defineConfig(({mode}) => {
               sizes: '1280x720',
               type: 'image/jpeg',
               form_factor: 'wide',
-              label: 'VendorFlow Dashboard'
+              label: 'VendorFlow Desktop Dashboard'
             },
             {
               src: 'https://picsum.photos/seed/vendorflow2/720/1280',
               sizes: '720x1280',
               type: 'image/jpeg',
               form_factor: 'narrow',
-              label: 'VendorFlow Mobile'
+              label: 'VendorFlow Mobile App'
             }
           ],
           related_applications: [
@@ -116,13 +118,17 @@ export default defineConfig(({mode}) => {
           shortcuts: [
             {
               name: 'New Invoice',
+              short_name: 'Invoice',
+              description: 'Quickly create a new professional invoice',
               url: '/invoices/new',
-              icons: [{ src: '/logo.svg', sizes: '512x512' }]
+              icons: [{ src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' }]
             },
             {
               name: 'New Receipt',
+              short_name: 'Receipt',
+              description: 'Quickly create a new professional receipt',
               url: '/receipts/new',
-              icons: [{ src: '/logo.svg', sizes: '512x512' }]
+              icons: [{ src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' }]
             }
           ]
         },
