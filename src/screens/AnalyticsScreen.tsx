@@ -53,7 +53,7 @@ export const AnalyticsScreen = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="px-6 pt-4 pb-40 max-w-3xl mx-auto w-full"
+      className="pt-4 pb-40"
     >
       <section className="mb-8">
         <h2 className="text-4xl font-black tracking-tighter text-on-surface mb-2">Analytics</h2>

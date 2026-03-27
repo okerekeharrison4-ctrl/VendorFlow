@@ -61,7 +61,7 @@ export const PreviewScreen = () => {
     URL.revokeObjectURL(url);
   };
 
-  const handleShareAction = async (action: 'share_image' | 'share_pdf' | 'download_image' | 'download_pdf' | 'share_text' | 'print' | 'whatsapp') => {
+  const handleShareAction = async (action: 'share_image' | 'share_pdf' | 'download_image' | 'download_pdf' | 'share_text' | 'print' | 'whatsapp' | 'email') => {
     setIsSharing(true);
     setShowShareMenu(false);
     
@@ -228,12 +228,12 @@ export const PreviewScreen = () => {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
-      className="px-6 pt-4 pb-48"
+      className="pt-4 pb-48"
     >
       <div className="w-full overflow-x-auto hide-scrollbar pb-4 -mx-2 px-2 sm:mx-0 sm:px-0">
         <div 
           ref={invoiceRef}
-          className="relative bg-surface-lowest rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.04)] overflow-hidden border border-outline-variant/5 min-w-[380px] max-w-md mx-auto"
+          className="relative bg-surface-lowest rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.04)] overflow-hidden border border-outline-variant/5 w-full"
         >
         {/* Header Section */}
         <div className="p-5 sm:p-6 pb-4">

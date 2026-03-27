@@ -2,10 +2,10 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #f9f9f9;
-  --color-surface: #f9f9f9;
-  --color-surface-low: #f2f4f4;
-  --color-surface-lowest: #ffffff;
+  --color-background: #f0f2f5;
+  --color-surface: #f0f2f5;
+  --color-surface-low: #e5e7eb;
+  --color-surface-lowest: #f9f9f9;
   --color-primary: #5c5f5d;
   --color-on-primary: #f7f8f5;
   --color-secondary: #006f1d;
@@ -50,8 +50,7 @@ body {
 
 #root {
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
+  width: 100%;
 }
 
 .pb-safe {

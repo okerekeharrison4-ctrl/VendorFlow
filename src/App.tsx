@@ -89,8 +89,8 @@ const AppContent = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#f0f2f5] flex justify-center">
-        <div className="w-full max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl min-h-screen bg-background flex items-center justify-center text-on-surface shadow-2xl">
+      <div className="min-h-screen bg-background">
+        <div className="w-full min-h-screen bg-background flex items-center justify-center text-on-surface">
           <div className="flex flex-col items-center gap-4">
             <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
             <span className="font-bold tracking-wide">Loading...</span>
@@ -102,8 +102,8 @@ const AppContent = () => {
 
   if (!hasCompletedOnboarding) {
     return (
-      <div className="min-h-screen bg-[#f0f2f5] flex justify-center">
-        <div className="w-full max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl min-h-screen bg-background relative shadow-2xl overflow-hidden">
+      <div className="min-h-screen bg-background">
+        <div className="w-full min-h-screen bg-background relative overflow-hidden">
           {showLanding ? (
             <LandingScreen onStart={() => setShowLanding(false)} />
           ) : (
@@ -116,8 +116,8 @@ const AppContent = () => {
 
   if (showWelcome) {
     return (
-      <div className="min-h-screen bg-[#f0f2f5] flex justify-center">
-        <div className="w-full max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl min-h-screen bg-background relative shadow-2xl overflow-hidden">
+      <div className="min-h-screen bg-background">
+        <div className="w-full min-h-screen bg-background relative overflow-hidden">
           <AnimatePresence mode="wait">
             <WelcomeScreen 
               key="welcome" 
@@ -133,8 +133,8 @@ const AppContent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] flex justify-center">
-      <div className="w-full max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-5xl min-h-screen bg-background text-on-surface relative shadow-2xl overflow-hidden">
+    <div className="min-h-screen bg-background">
+      <div className="w-full min-h-screen bg-background text-on-surface relative overflow-hidden">
         <Layout>
           <AnimatePresence mode="wait">
             <motion.div key={location.pathname} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
