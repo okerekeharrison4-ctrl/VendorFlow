@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-background: #f9f9f9;
+  --color-surface: #f9f9f9;
+  --color-surface-low: #f2f4f4;
+  --color-surface-lowest: #ffffff;
+  --color-primary: #5c5f5d;
+  --color-on-primary: #f7f8f5;
+  --color-secondary: #006f1d;
+  --color-secondary-container: #94f990;
+  --color-on-secondary-container: #006017;
+  --color-on-surface: #2d3435;
+  --color-on-surface-variant: #5a6061;
+  --color-outline-variant: #adb3b4;
+  --color-error: #9e422c;
+  --color-error-container: #fe8b70;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+:root.dark, body.dark {
+  --color-background: #121212;
+  --color-surface: #121212;
+  --color-surface-low: #1e1e1e;
+  --color-surface-lowest: #1a1a1a;
+  --color-primary: #e5e5e5;
+  --color-on-primary: #121212;
+  --color-secondary: #94f990;
+  --color-secondary-container: #004010;
+  --color-on-secondary-container: #94f990;
+  --color-on-surface: #f5f5f5;
+  --color-on-surface-variant: #a3a3a3;
+  --color-outline-variant: #404040;
+  --color-error: #ffb4a2;
+  --color-error-container: #93000a;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-on-surface);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+}
