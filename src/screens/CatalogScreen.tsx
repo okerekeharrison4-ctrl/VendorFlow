@@ -57,7 +57,7 @@ export const CatalogScreen = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="px-6 pt-4 pb-40"
+      className="px-6 pt-4 pb-40 max-w-3xl mx-auto w-full"
     >
       <section className="mb-8 flex items-center justify-between">
         <div>

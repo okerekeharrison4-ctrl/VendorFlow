@@ -233,7 +233,7 @@ export const PreviewScreen = () => {
       <div className="w-full overflow-x-auto hide-scrollbar pb-4 -mx-2 px-2 sm:mx-0 sm:px-0">
         <div 
           ref={invoiceRef}
-          className="relative bg-surface-lowest rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.04)] overflow-hidden border border-outline-variant/5 min-w-[380px] sm:min-w-full mx-auto"
+          className="relative bg-surface-lowest rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.04)] overflow-hidden border border-outline-variant/5 min-w-[380px] max-w-md mx-auto"
         >
         {/* Header Section */}
         <div className="p-5 sm:p-6 pb-4">

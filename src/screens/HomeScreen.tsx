@@ -19,7 +19,7 @@ export const HomeScreen = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="px-6 pt-4 pb-32"
+      className="px-6 pt-4 pb-32 max-w-5xl mx-auto w-full"
     >
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="bg-[#141414] text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[200px]">

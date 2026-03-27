@@ -93,7 +93,7 @@ export const CreateInvoiceScreen = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="px-6 pt-4 pb-40"
+      className="px-6 pt-4 pb-40 max-w-3xl mx-auto w-full"
     >
       <section className="mb-8">
         <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Your Brand Name</label>

@@ -222,7 +222,7 @@ export const ReceiptScreen = () => {
       className="px-6 pt-8 pb-32 flex flex-col items-center"
     >
       <div className="w-full overflow-x-auto hide-scrollbar pb-4 -mx-2 px-2 sm:mx-0 sm:px-0">
-        <div ref={receiptRef} className="relative w-full max-w-md mx-auto flex flex-col items-center bg-background pb-6 overflow-hidden min-w-[380px] sm:min-w-full">
+        <div ref={receiptRef} className="relative w-full max-w-md mx-auto flex flex-col items-center bg-background pb-6 overflow-hidden min-w-[380px]">
         <div className="text-center mb-5 pt-2">
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-3 shadow-sm" style={{ backgroundColor: templateColor ? displayColor20 : 'var(--color-secondary-container)', color: templateColor ? displayColor : 'var(--color-secondary)' }}>
             <CheckCircle2 size={28} strokeWidth={2.5} />
