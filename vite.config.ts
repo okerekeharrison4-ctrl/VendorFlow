@@ -78,7 +78,6 @@ export default defineConfig(({mode}) => {
               id: 'com.vendorflow.app'
             }
           ],
-          iarc_rating_id: '12345678-1234-1234-1234-123456789012',
           display_override: ['window-controls-overlay', 'standalone', 'minimal-ui'],
           handle_links: 'auto',
           launch_handler: {
@@ -109,12 +108,6 @@ export default defineConfig(({mode}) => {
               }
             }
           ],
-          // @ts-ignore - serviceworker is used by PWABuilder but not in standard ManifestOptions
-          serviceworker: {
-            src: '/sw.js',
-            scope: '/',
-            type: 'classic'
-          },
           shortcuts: [
             {
               name: 'New Invoice',
