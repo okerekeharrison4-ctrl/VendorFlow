@@ -9,6 +9,7 @@ import { ReceiptScreen } from './screens/ReceiptScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import { OnboardingScreen } from './screens/OnboardingScreen';
 import { WelcomeScreen } from './screens/WelcomeScreen';
+import { LandingScreen } from './screens/LandingScreen';
 import { ClientsScreen } from './screens/ClientsScreen';
 import { CatalogScreen } from './screens/CatalogScreen';
 import { AnalyticsScreen } from './screens/AnalyticsScreen';
@@ -27,6 +28,7 @@ const AppContent = () => {
   const location = useLocation();
   
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const [showInterstitial, setShowInterstitial] = useState(false);
   const hasCheckedAd = React.useRef(false);
 
@@ -90,6 +92,9 @@ const AppContent = () => {
   }
 
   if (!hasCompletedOnboarding) {
+    if (showLanding) {
+      return <LandingScreen onStart={() => setShowLanding(false)} />;
+    }
     return <OnboardingScreen />;
   }
 
