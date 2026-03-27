@@ -32,15 +32,25 @@ export default defineConfig(({mode}) => {
           icons: [
             {
               src: '/icon-512x512.svg',
-              sizes: '192x192 512x512',
-              type: 'image/svg+xml',
-              purpose: 'any maskable'
-            },
-            {
-              src: '/logo.svg',
               sizes: '512x512',
               type: 'image/svg+xml',
               purpose: 'any'
+            },
+            {
+              src: '/icon-512x512.svg',
+              sizes: '512x512',
+              type: 'image/svg+xml',
+              purpose: 'maskable'
+            },
+            {
+              src: '/icon-192x192.png',
+              sizes: '192x192',
+              type: 'image/png'
+            },
+            {
+              src: '/icon-512x512.png',
+              sizes: '512x512',
+              type: 'image/png'
             }
           ],
           screenshots: [
@@ -59,6 +69,50 @@ export default defineConfig(({mode}) => {
               label: 'VendorFlow Mobile'
             }
           ],
+          related_applications: [
+            {
+              platform: 'play',
+              url: 'https://play.google.com/store/apps/details?id=com.vendorflow.app',
+              id: 'com.vendorflow.app'
+            }
+          ],
+          iarc_rating_id: '12345678-1234-1234-1234-123456789012',
+          display_override: ['window-controls-overlay', 'standalone', 'minimal-ui'],
+          handle_links: 'auto',
+          launch_handler: {
+            client_mode: ['navigate-new', 'focus-existing']
+          },
+          share_target: {
+            action: '/share',
+            method: 'GET',
+            enctype: 'application/x-www-form-urlencoded',
+            params: {
+              title: 'title',
+              text: 'text',
+              url: 'url'
+            }
+          },
+          protocol_handlers: [
+            {
+              protocol: 'web+vendorflow',
+              url: '/?url=%s'
+            }
+          ],
+          file_handlers: [
+            {
+              action: '/?file=%s',
+              accept: {
+                'application/json': ['.json', '.vflow'],
+                'text/plain': ['.txt']
+              }
+            }
+          ],
+          // @ts-ignore - serviceworker is used by PWABuilder but not in standard ManifestOptions
+          serviceworker: {
+            src: '/sw.js',
+            scope: '/',
+            type: 'classic'
+          },
           shortcuts: [
             {
               name: 'New Invoice',
