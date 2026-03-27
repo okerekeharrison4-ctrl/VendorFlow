@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { formatCurrency, calculateTotal, formatDate } from '../utils/helpers';
 import { motion, AnimatePresence } from 'motion/react';
 import { Share2, CheckCircle2, Loader2 } from 'lucide-react';
-import { toPng } from 'html-to-image';
+import { toPng, toBlob } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useAdSystem } from '../hooks/useAdSystem';
 import { MockAdVideo } from '../components/MockAdVideo';
@@ -78,8 +78,14 @@ export const PreviewScreen = () => {
 
       if (!invoiceRef.current) return;
 
-      // Use html-to-image instead of html2canvas to handle modern CSS colors
-      const dataUrl = await toPng(invoiceRef.current, { 
+      // Small delay to ensure any animations or rendering are finished
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const isPdf = action === 'share_pdf' || action === 'download_pdf' || action === 'print';
+      const isWhatsApp = action === 'whatsapp';
+
+      // Use toBlob for better performance and memory management
+      const blob = await toBlob(invoiceRef.current, { 
         pixelRatio: 2,
         backgroundColor: '#ffffff',
         cacheBust: true,
@@ -91,11 +97,10 @@ export const PreviewScreen = () => {
         }
       });
 
-      if (action === 'whatsapp') {
-        const response = await fetch(dataUrl);
-        const blob = await response.blob();
-        const file = new File([blob], `Invoice-${invoice.invoiceNumber}.png`, { type: 'image/png' });
+      if (!blob) throw new Error('Failed to generate image blob');
 
+      if (isWhatsApp) {
+        const file = new File([blob], `Invoice-${invoice.invoiceNumber}.png`, { type: 'image/png' });
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
         if (isMobile && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -120,19 +125,30 @@ export const PreviewScreen = () => {
       }
       
       let file: File;
-      const isPdf = action === 'share_pdf' || action === 'download_pdf' || action === 'print';
       
       if (!isPdf) {
-        const response = await fetch(dataUrl);
-        const blob = await response.blob();
         file = new File([blob], `Invoice-${invoice.invoiceNumber}.png`, { type: 'image/png' });
       } else {
-        const pdf = new jsPDF({
-          orientation: 'portrait',
-          unit: 'px',
-          format: [invoiceRef.current.offsetWidth * 2, invoiceRef.current.offsetHeight * 2]
+        // Convert blob to dataUrl for jsPDF
+        const reader = new FileReader();
+        const dataUrl = await new Promise<string>((resolve) => {
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(blob);
         });
-        pdf.addImage(dataUrl, 'PNG', 0, 0, invoiceRef.current.offsetWidth * 2, invoiceRef.current.offsetHeight * 2);
+
+        const img = new Image();
+        await new Promise((resolve) => {
+          img.onload = resolve;
+          img.src = dataUrl;
+        });
+
+        const pdf = new jsPDF({
+          orientation: img.width > img.height ? 'landscape' : 'portrait',
+          unit: 'px',
+          format: [img.width, img.height]
+        });
+        
+        pdf.addImage(dataUrl, 'PNG', 0, 0, img.width, img.height);
         const pdfBlob = pdf.output('blob');
         
         if (action === 'print') {
@@ -143,7 +159,6 @@ export const PreviewScreen = () => {
               printWindow.print();
             };
           } else {
-            // Fallback if popup blocked
             const iframe = document.createElement('iframe');
             iframe.style.display = 'none';
             iframe.src = blobUrl;
@@ -163,10 +178,7 @@ export const PreviewScreen = () => {
       if (action.startsWith('share_')) {
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           try {
-            // CRITICAL: Omitting title and text ensures WhatsApp accepts the file instead of falling back to text
-            await navigator.share({
-              files: [file]
-            });
+            await navigator.share({ files: [file] });
           } catch (err: any) {
             if (err.name !== 'AbortError') {
               downloadFile(file);
@@ -180,7 +192,7 @@ export const PreviewScreen = () => {
       }
     } catch (err) {
       console.error('Action failed', err);
-      alert('Failed to process request. Please try again.');
+      alert('Failed to process request. This might be due to device memory or browser restrictions. Please try again or use a different share option.');
     } finally {
       setIsSharing(false);
     }
