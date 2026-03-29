@@ -14,11 +14,13 @@ type StoreContextType = {
   lastSyncedAt: number | null;
   isLoading: boolean;
   theme: 'light' | 'dark';
+  isPaletteOpen: boolean;
   setCurrency: (currency: Currency) => void;
   setBankDetails: (details: BankDetails | null) => void;
   setBrandName: (name: string) => void;
   setTemplateConfig: (config: TemplateConfig) => void;
   toggleTheme: () => void;
+  togglePalette: () => void;
   addInvoice: (invoice: Invoice) => void;
   updateInvoice: (invoice: Invoice) => void;
   deleteInvoice: (id: string) => void;
@@ -46,7 +48,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [brandName, setBrandNameState] = useState<string>('');
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
   const [theme, setThemeState] = useState<'light' | 'dark'>('light');
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const togglePalette = () => setIsPaletteOpen(prev => !prev);
 
   useEffect(() => {
     async function loadData() {
@@ -156,8 +161,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <StoreContext.Provider value={{
-      invoices, clients, catalog, currency, hasCompletedOnboarding, bankDetails, brandName, templateConfig, lastSyncedAt, isLoading, theme,
-      setCurrency, setBankDetails, setBrandName, setTemplateConfig, toggleTheme,
+      invoices, clients, catalog, currency, hasCompletedOnboarding, bankDetails, brandName, templateConfig, lastSyncedAt, isLoading, theme, isPaletteOpen,
+      setCurrency, setBankDetails, setBrandName, setTemplateConfig, toggleTheme, togglePalette,
       addInvoice, updateInvoice, deleteInvoice, markAsPaid, getInvoice,
       addClient, updateClient, deleteClient,
       addCatalogItem, updateCatalogItem, deleteCatalogItem,

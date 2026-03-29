@@ -8,14 +8,14 @@ interface LandingScreenProps {
 
 export const LandingScreen = ({ onStart }: LandingScreenProps) => {
   return (
-    <div className="absolute inset-0 bg-gradient-to-br from-surface-lowest to-surface-low z-[60] flex flex-col items-center justify-center px-8">
+    <div className="absolute inset-0 bg-gradient-to-br from-surface-container-lowest to-surface-container-low z-[60] flex flex-col items-center justify-center px-8">
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="flex flex-col items-center text-center max-w-sm"
       >
-        <div className="mb-12 shadow-[0_20px_40px_rgba(0,0,0,0.12)] rounded-[2rem]">
+        <div className="mb-12 shadow-[0_20px_40px_rgba(0,0,0,0.12)] rounded-3xl">
           <Logo size={120} variant="icon" />
         </div>
         
@@ -31,7 +31,7 @@ export const LandingScreen = ({ onStart }: LandingScreenProps) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onStart}
-          className="w-full py-5 bg-primary text-on-primary rounded-full font-bold text-xl tracking-wide shadow-xl shadow-primary/25 transition-all hover:bg-primary/90"
+          className="w-full py-5 bg-primary text-on-primary rounded-full font-bold text-xl tracking-wide shadow-ambient shadow-primary/25 transition-all hover:bg-primary/90"
         >
           Get Started
         </motion.button>

@@ -218,9 +218,14 @@ export const PreviewScreen = () => {
     }
   };
 
+  const [isPaid, setIsPaid] = useState(false);
+  
   const handleMarkPaid = () => {
-    markAsPaid(invoice.id);
-    navigate(`/receipt/${invoice.id}`);
+    setIsPaid(true);
+    setTimeout(() => {
+      markAsPaid(invoice.id);
+      navigate(`/receipt/${invoice.id}`);
+    }, 800);
   };
 
   return (
@@ -228,21 +233,41 @@ export const PreviewScreen = () => {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
-      className="pt-4 pb-48"
+      className="px-6 md:px-12 pt-4 md:pt-8 pb-48 md:pb-12"
     >
       <div className="w-full overflow-x-auto hide-scrollbar pb-4 -mx-2 px-2 sm:mx-0 sm:px-0">
         <div 
           ref={invoiceRef}
-          className="relative bg-surface-lowest rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.04)] overflow-hidden border border-outline-variant/5 w-full"
+          layoutId={`invoice-${id}`}
+          className="relative bg-surface-container-lowest rounded-3xl shadow-ambient overflow-hidden  min-w-[380px] sm:min-w-full mx-auto"
         >
         {/* Header Section */}
         <div className="p-5 sm:p-6 pb-4">
           <div className="flex justify-between items-start mb-5">
             <div>
-              <div className="hide-on-export inline-flex items-center gap-1.5 px-3 py-1 bg-surface-low text-on-surface-variant rounded-full text-[10px] font-bold tracking-widest uppercase mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
-                Unpaid
-              </div>
+              <AnimatePresence mode="wait">
+                {isPaid ? (
+                  <motion.div
+                    key="paid"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-[10px] font-bold tracking-widest uppercase mb-4"
+                  >
+                    <CheckCircle2 size={12} />
+                    Paid
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="unpaid"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="hide-on-export inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container-low text-on-surface-variant rounded-full text-[10px] font-bold tracking-widest uppercase mb-4"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
+                    Unpaid
+                  </motion.div>
+                )}
+              </AnimatePresence>
               {invoice.brandName && (
                 <p className="text-sm font-bold text-on-surface tracking-tight">{invoice.brandName}</p>
               )}
@@ -256,7 +281,7 @@ export const PreviewScreen = () => {
           <div className="mb-4 w-full overflow-hidden">
             <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Total Due</p>
             <h1 
-              className="text-3xl sm:text-4xl font-black tracking-tighter break-words"
+              className="text-3xl sm:text-4xl font-mono font-black tracking-tighter break-words"
               style={{ color: displayColor || 'inherit' }}
             >
               {formatCurrency(total, currency.symbol)}
@@ -265,11 +290,11 @@ export const PreviewScreen = () => {
 
           {/* Bento Grid for Info */}
           <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            <div className="bg-surface-low/50 rounded-2xl p-4">
+            <div className="bg-surface-container-low rounded-3xl p-4">
               <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Billed To</p>
               <p className="text-sm font-bold text-on-surface">{invoice.customerName}</p>
             </div>
-            <div className="bg-surface-low/50 rounded-2xl p-4">
+            <div className="bg-surface-container-low rounded-3xl p-4">
               <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Date</p>
               <p className="text-sm font-bold text-on-surface">{formatDate(invoice.createdAt)}</p>
             </div>
@@ -278,9 +303,9 @@ export const PreviewScreen = () => {
 
         {/* Ticket Perforation Divider */}
         <div className="relative h-6 flex items-center justify-center overflow-hidden">
-          <div className="absolute left-[-16px] w-8 h-8 bg-background rounded-full border border-outline-variant/10"></div>
+          <div className="absolute left-[-16px] w-8 h-8 bg-background rounded-full "></div>
           <div className="w-full border-t-2 border-dashed border-outline-variant/20 mx-6"></div>
-          <div className="absolute right-[-16px] w-8 h-8 bg-background rounded-full border border-outline-variant/10"></div>
+          <div className="absolute right-[-16px] w-8 h-8 bg-background rounded-full "></div>
         </div>
 
         {/* Items Section */}
@@ -308,7 +333,7 @@ export const PreviewScreen = () => {
         {invoice.bankDetails && (
           <div className="px-5 sm:px-6 pb-5">
             <div 
-              className="text-white rounded-2xl p-5 relative overflow-hidden"
+              className="text-white rounded-3xl p-5 relative overflow-hidden"
               style={{ backgroundColor: invoice.template?.color || '#141414' }}
             >
               {/* Decorative gradient blob */}
@@ -358,7 +383,7 @@ export const PreviewScreen = () => {
       </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 w-full bg-surface-lowest border-t border-outline-variant/10 p-6 pb-safe shadow-[0_-10px_40px_rgba(0,0,0,0.05)] z-40">
+      <div className="fixed bottom-0 left-0 w-full bg-surface-container-lowest  p-6 pb-safe shadow-ambient z-40">
         <div className="max-w-3xl mx-auto space-y-4">
           <AnimatePresence>
             {isOnline && !removeWatermark && showRewardPrompt && (
@@ -366,7 +391,7 @@ export const PreviewScreen = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
-                className="bg-surface-low rounded-2xl p-4 flex items-center justify-between"
+                className="bg-surface-container-low rounded-3xl p-4 flex items-center justify-between"
               >
                 <span className="text-sm font-medium text-on-surface">Make it look more professional</span>
                 <button 
@@ -406,7 +431,7 @@ export const PreviewScreen = () => {
             <button 
               onClick={() => setShowShareMenu(true)}
               disabled={isSharing}
-              className="flex-1 py-4 bg-primary text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-lg disabled:opacity-70"
+              className="flex-1 py-4 bg-primary text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-ambient disabled:opacity-70"
             >
               {isSharing ? <Loader2 size={18} className="animate-spin" strokeWidth={2.5} /> : <Share2 size={18} strokeWidth={2.5} />}
               {isSharing ? 'Preparing...' : 'Share Invoice'}
@@ -437,7 +462,7 @@ export const PreviewScreen = () => {
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="bg-surface-lowest w-full max-w-sm rounded-[2rem] p-6 space-y-3 shadow-2xl mb-4 sm:mb-0"
+              className="bg-surface-container-lowest w-full max-w-sm rounded-3xl p-6 space-y-3 shadow-ambient mb-4 sm:mb-0"
               onClick={e => e.stopPropagation()}
             >
               <h3 className="text-lg font-extrabold text-on-surface mb-4">Share or Save</h3>
@@ -475,13 +500,13 @@ export const PreviewScreen = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleShareAction('share_image')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       Image
                     </button>
                     <button 
                       onClick={() => handleShareAction('share_pdf')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       PDF
                     </button>
@@ -493,13 +518,13 @@ export const PreviewScreen = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleShareAction('download_image')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       Image
                     </button>
                     <button 
                       onClick={() => handleShareAction('download_pdf')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       PDF
                     </button>
@@ -511,13 +536,13 @@ export const PreviewScreen = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleShareAction('print')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       Print
                     </button>
                     <button 
                       onClick={() => handleShareAction('share_text')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       Text Only
                     </button>

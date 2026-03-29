@@ -4,6 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import { formatCurrency, calculateTotal } from '../utils/helpers';
 import { motion } from 'motion/react';
 
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.1 } }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 }
+};
+
 export const DebtListScreen = () => {
   const { invoices, currency } = useStore();
   const navigate = useNavigate();
@@ -16,7 +26,7 @@ export const DebtListScreen = () => {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
-      className="pt-4 pb-40"
+      className="px-6 md:px-12 pt-4 md:pt-8 pb-40 md:pb-12"
     >
       <section className="mb-10">
         <h2 className="text-4xl font-black tracking-tighter text-on-surface mb-2">Invoices</h2>
@@ -24,7 +34,7 @@ export const DebtListScreen = () => {
       </section>
 
       {invoices.length === 0 ? (
-        <div className="text-center py-16 px-6 bg-surface-low/50 rounded-[2rem] border border-dashed border-outline-variant/20">
+        <div className="text-center py-16 px-6 bg-surface-container-low rounded-3xl ">
           <p className="text-on-surface-variant text-sm font-bold">No invoices yet.</p>
         </div>
       ) : (
@@ -32,15 +42,22 @@ export const DebtListScreen = () => {
           {unpaidInvoices.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant ml-2">Pending Dues</h3>
-              <div className="space-y-3">
+              <motion.div 
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="space-y-3"
+              >
                 {unpaidInvoices.map(invoice => (
-                  <div 
+                  <motion.div 
                     key={invoice.id}
+                    variants={item}
+                    layoutId={`invoice-${invoice.id}`}
                     onClick={() => navigate(`/preview/${invoice.id}`)}
-                    className="bg-surface-lowest p-5 rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group hover:border-outline-variant/20"
+                    className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-surface-low flex items-center justify-center text-primary font-black text-lg shadow-inner">
+                      <div className="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-primary font-black text-lg shadow-inner">
                         {invoice.customerName.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -49,31 +66,41 @@ export const DebtListScreen = () => {
                       </div>
                     </div>
                     <div className="text-right flex flex-col items-end">
-                      <span className="block text-xl font-black tracking-tight text-on-surface">
+                      <span className="block text-xl font-mono font-black tracking-tight text-on-surface">
                         {formatCurrency(calculateTotal(invoice.items), currency.symbol)}
                       </span>
-                      <span className="inline-block mt-2 px-2.5 py-1 rounded-full bg-surface-low text-on-surface-variant text-[9px] font-bold uppercase tracking-widest">
+                      <motion.span 
+                        layout
+                        className="inline-block mt-2 px-2.5 py-1 rounded-full bg-surface-container-low text-on-surface-variant text-[9px] font-bold uppercase tracking-widest"
+                      >
                         Unpaid
-                      </span>
+                      </motion.span>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </div>
           )}
 
           {paidInvoices.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant ml-2">Completed</h3>
-              <div className="space-y-3">
+              <motion.div 
+                variants={container}
+                initial="hidden"
+                animate="show"
+                className="space-y-3"
+              >
                 {paidInvoices.map(invoice => (
-                  <div 
+                  <motion.div 
                     key={invoice.id}
+                    variants={item}
+                    layoutId={`invoice-${invoice.id}`}
                     onClick={() => navigate(`/receipt/${invoice.id}`)}
-                    className="bg-surface-low/30 p-5 rounded-[1.5rem] border border-transparent active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between opacity-80 hover:opacity-100 hover:bg-surface-low/50"
+                    className="bg-surface-container-low p-5 rounded-3xl  active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between opacity-80 hover:opacity-100 hover:bg-surface-container-low"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-secondary-container/50 flex items-center justify-center text-secondary font-black text-lg shadow-inner">
+                      <div className="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-black text-lg shadow-inner">
                         {invoice.customerName.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -82,16 +109,19 @@ export const DebtListScreen = () => {
                       </div>
                     </div>
                     <div className="text-right flex flex-col items-end">
-                      <span className="block text-xl font-black tracking-tight text-on-surface-variant">
+                      <span className="block text-xl font-mono font-black tracking-tight text-on-surface-variant">
                         {formatCurrency(calculateTotal(invoice.items), currency.symbol)}
                       </span>
-                      <span className="inline-block mt-2 px-2.5 py-1 rounded-full bg-secondary-container/50 text-secondary text-[9px] font-bold uppercase tracking-widest">
+                      <motion.span 
+                        layout
+                        className="inline-block mt-2 px-2.5 py-1 rounded-full bg-secondary-container text-on-secondary-container text-[9px] font-bold uppercase tracking-widest"
+                      >
                         Paid
-                      </span>
+                      </motion.span>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             </div>
           )}
         </div>

@@ -3,6 +3,16 @@ import { useStore } from '../store/StoreContext';
 import { motion } from 'motion/react';
 import { Plus, Search, Edit2, Trash2, Mail, Phone } from 'lucide-react';
 
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0 }
+};
+
 export const ClientsScreen = () => {
   const { clients, addClient, updateClient, deleteClient } = useStore();
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,7 +69,7 @@ export const ClientsScreen = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="pt-4 pb-40"
+      className="px-6 md:px-12 pt-4 md:pt-8 pb-40 md:pb-12"
     >
       <section className="mb-8 flex items-center justify-between">
         <div>
@@ -72,7 +82,7 @@ export const ClientsScreen = () => {
             setEditingId(null);
             setFormData({ name: '', email: '', phone: '', address: '' });
           }}
-          className="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+          className="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-ambient active:scale-95 transition-transform"
         >
           <Plus size={24} />
         </button>
@@ -82,7 +92,7 @@ export const ClientsScreen = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-surface-lowest rounded-[2rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 mb-8"
+          className="bg-surface-container-lowest rounded-3xl p-6 shadow-ambient mb-8"
         >
           <h3 className="text-lg font-bold mb-4">{editingId ? 'Edit Client' : 'New Client'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -92,7 +102,7 @@ export const ClientsScreen = () => {
                 type="text" 
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-surface-low/50 border-none rounded-2xl px-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-3xl px-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all"
                 placeholder="Client Name"
                 required
               />
@@ -103,7 +113,7 @@ export const ClientsScreen = () => {
                 type="email" 
                 value={formData.email}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
-                className="w-full bg-surface-low/50 border-none rounded-2xl px-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-3xl px-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all"
                 placeholder="client@example.com"
               />
             </div>
@@ -113,7 +123,7 @@ export const ClientsScreen = () => {
                 type="tel" 
                 value={formData.phone}
                 onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full bg-surface-low/50 border-none rounded-2xl px-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-3xl px-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all"
                 placeholder="+1 234 567 8900"
               />
             </div>
@@ -122,7 +132,7 @@ export const ClientsScreen = () => {
               <textarea 
                 value={formData.address}
                 onChange={e => setFormData({ ...formData, address: e.target.value })}
-                className="w-full bg-surface-low/50 border-none rounded-2xl px-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all resize-none h-24"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-3xl px-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all resize-none h-24"
                 placeholder="Client Address"
               />
             </div>
@@ -130,7 +140,7 @@ export const ClientsScreen = () => {
               <button 
                 type="button"
                 onClick={() => setIsAdding(false)}
-                className="flex-1 py-4 text-on-surface-variant font-bold text-sm bg-surface-low hover:bg-surface-low/80 rounded-full transition-colors"
+                className="flex-1 py-4 text-on-surface-variant font-bold text-sm bg-surface-container-low hover:bg-surface-container-low/80 rounded-full transition-colors"
               >
                 Cancel
               </button>
@@ -152,18 +162,27 @@ export const ClientsScreen = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search clients..."
-              className="w-full bg-surface-lowest border border-outline-variant/10 rounded-full pl-12 pr-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all shadow-sm"
+              className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full pl-12 pr-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all shadow-ambient"
             />
           </div>
 
-          <div className="space-y-3">
+          <motion.div 
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="space-y-3"
+          >
             {filteredClients.length === 0 ? (
               <div className="text-center py-10 text-on-surface-variant">
                 <p>No clients found.</p>
               </div>
             ) : (
               filteredClients.map(client => (
-                <div key={client.id} className="bg-surface-lowest p-5 rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5">
+                <motion.div 
+                  key={client.id} 
+                  variants={item}
+                  className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient"
+                >
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold text-on-surface">{client.name}</h3>
                     <div className="flex gap-2">
@@ -186,14 +205,14 @@ export const ClientsScreen = () => {
                     {client.phone && (
                       <div className="flex items-center gap-2 text-sm text-on-surface-variant">
                         <Phone size={14} />
-                        <span>{client.phone}</span>
+                        <span className="font-mono">{client.phone}</span>
                       </div>
                     )}
                   </div>
-                </div>
+                </motion.div>
               ))
             )}
-          </div>
+          </motion.div>
         </>
       )}
     </motion.div>

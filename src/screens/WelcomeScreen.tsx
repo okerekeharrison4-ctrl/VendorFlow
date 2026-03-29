@@ -26,7 +26,7 @@ export const WelcomeScreen = ({ onComplete }: { onComplete: () => void, key?: st
         transition={{ delay: 0.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className="flex flex-col items-center"
       >
-        <div className="mb-8 shadow-[0_20px_40px_rgba(0,0,0,0.08)] rounded-[1.5rem]">
+        <div className="mb-8 shadow-ambient rounded-3xl">
           <Logo size={80} variant="icon" />
         </div>
         <h1 className="text-4xl font-black tracking-tighter text-on-surface mb-2">

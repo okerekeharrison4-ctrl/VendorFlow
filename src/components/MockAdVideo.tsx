@@ -35,12 +35,12 @@ export const MockAdVideo: React.FC<MockAdVideoProps> = ({ onComplete, onClose, t
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 z-[200] bg-surface-lowest flex flex-col items-center justify-center text-on-surface"
+        className="absolute inset-0 z-[200] bg-surface-container-lowest flex flex-col items-center justify-center text-on-surface"
       >
         {canClose && (
           <button 
             onClick={onClose}
-            className="absolute top-6 right-6 p-2 bg-surface-low rounded-full hover:bg-surface-high transition-colors"
+            className="absolute top-6 right-6 p-2 bg-surface-container-low rounded-full hover:bg-surface-high transition-colors"
           >
             <X size={24} />
           </button>
@@ -73,7 +73,7 @@ export const MockAdVideo: React.FC<MockAdVideoProps> = ({ onComplete, onClose, t
                 {type === 'rewarded' ? 'Sponsor Message' : 'Discover More'}
               </h2>
               
-              <div className="w-64 h-3 bg-surface-low rounded-full overflow-hidden mx-auto">
+              <div className="w-64 h-3 bg-surface-container-low rounded-full overflow-hidden mx-auto">
                 <motion.div 
                   className="h-full bg-primary"
                   initial={{ width: '0%' }}

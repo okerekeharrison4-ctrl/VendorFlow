@@ -4,6 +4,16 @@ import { motion } from 'motion/react';
 import { Plus, Search, Edit2, Trash2, Package } from 'lucide-react';
 import { formatCurrency } from '../utils/helpers';
 
+const container = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.05 } }
+};
+
+const item = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0 }
+};
+
 export const CatalogScreen = () => {
   const { catalog, addCatalogItem, updateCatalogItem, deleteCatalogItem, currency } = useStore();
   const [searchQuery, setSearchQuery] = useState('');
@@ -57,7 +67,7 @@ export const CatalogScreen = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="pt-4 pb-40"
+      className="px-6 md:px-12 pt-4 md:pt-8 pb-40 md:pb-12"
     >
       <section className="mb-8 flex items-center justify-between">
         <div>
@@ -70,7 +80,7 @@ export const CatalogScreen = () => {
             setEditingId(null);
             setFormData({ name: '', description: '', price: 0 });
           }}
-          className="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+          className="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-ambient active:scale-95 transition-transform"
         >
           <Plus size={24} />
         </button>
@@ -80,7 +90,7 @@ export const CatalogScreen = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-surface-lowest rounded-[2rem] p-6 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 mb-8"
+          className="bg-surface-container-lowest rounded-3xl p-6 shadow-ambient mb-8"
         >
           <h3 className="text-lg font-bold mb-4">{editingId ? 'Edit Item' : 'New Item'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -90,7 +100,7 @@ export const CatalogScreen = () => {
                 type="text" 
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-surface-low/50 border-none rounded-2xl px-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-3xl px-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all"
                 placeholder="Product or Service Name"
                 required
               />
@@ -103,7 +113,7 @@ export const CatalogScreen = () => {
                   type="number" 
                   value={formData.price || ''}
                   onChange={e => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-                  className="w-full bg-surface-low/50 border-none rounded-2xl pl-12 pr-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all"
+                  className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-3xl pl-12 pr-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all"
                   placeholder="0.00"
                   min="0"
                   step="0.01"
@@ -116,7 +126,7 @@ export const CatalogScreen = () => {
               <textarea 
                 value={formData.description}
                 onChange={e => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-surface-low/50 border-none rounded-2xl px-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all resize-none h-24"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-3xl px-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all resize-none h-24"
                 placeholder="Optional description"
               />
             </div>
@@ -124,7 +134,7 @@ export const CatalogScreen = () => {
               <button 
                 type="button"
                 onClick={() => setIsAdding(false)}
-                className="flex-1 py-4 text-on-surface-variant font-bold text-sm bg-surface-low hover:bg-surface-low/80 rounded-full transition-colors"
+                className="flex-1 py-4 text-on-surface-variant font-bold text-sm bg-surface-container-low hover:bg-surface-container-low/80 rounded-full transition-colors"
               >
                 Cancel
               </button>
@@ -146,25 +156,34 @@ export const CatalogScreen = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search catalog..."
-              className="w-full bg-surface-lowest border border-outline-variant/10 rounded-full pl-12 pr-5 py-4 text-on-surface font-medium focus:ring-2 focus:ring-primary outline-none transition-all shadow-sm"
+              className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full pl-12 pr-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all shadow-ambient"
             />
           </div>
 
-          <div className="space-y-3">
+          <motion.div 
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="space-y-3"
+          >
             {filteredItems.length === 0 ? (
               <div className="text-center py-10 text-on-surface-variant">
                 <p>No items found in catalog.</p>
               </div>
             ) : (
               filteredItems.map(item => (
-                <div key={item.id} className="bg-surface-lowest p-5 rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 flex items-center justify-between">
+                <motion.div 
+                  key={item.id} 
+                  variants={item}
+                  className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient flex items-center justify-between"
+                >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-surface-low flex items-center justify-center text-primary">
+                    <div className="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
                       <Package size={20} />
                     </div>
                     <div>
                       <h3 className="font-bold text-on-surface">{item.name}</h3>
-                      <p className="text-sm text-on-surface-variant">{formatCurrency(item.price, currency.symbol)}</p>
+                      <p className="text-sm font-mono font-bold text-on-surface-variant">{formatCurrency(item.price, currency.symbol)}</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
@@ -175,10 +194,10 @@ export const CatalogScreen = () => {
                       <Trash2 size={20} />
                     </button>
                   </div>
-                </div>
+                </motion.div>
               ))
             )}
-          </div>
+          </motion.div>
         </>
       )}
     </motion.div>

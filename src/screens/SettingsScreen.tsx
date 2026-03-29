@@ -83,7 +83,7 @@ export const SettingsScreen = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="pt-4 pb-40"
+      className="px-6 md:px-12 pt-4 md:pt-8 pb-40 md:pb-12"
     >
       <section className="mb-10">
         <h2 className="text-4xl font-black tracking-tighter text-on-surface mb-2">Settings</h2>
@@ -94,18 +94,18 @@ export const SettingsScreen = () => {
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">Appearance</h3>
         <div 
           onClick={toggleTheme}
-          className="bg-surface-lowest rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 p-6 cursor-pointer hover:bg-surface-low/50 transition-colors flex items-center justify-between"
+          className="bg-surface-container-lowest rounded-3xl shadow-ambient p-6 cursor-pointer hover:bg-surface-container-low transition-colors flex items-center justify-between"
         >
           <div>
             <p className="font-bold text-on-surface text-sm">Dark Mode</p>
             <p className="text-[10px] text-on-surface-variant mt-1 font-medium">Switch between light and dark themes.</p>
           </div>
           <div
-            className={`w-14 h-8 rounded-full transition-colors flex items-center px-1 ${theme === 'dark' ? 'bg-primary' : 'bg-surface-low'}`}
+            className={`w-14 h-8 rounded-full transition-colors flex items-center px-1 ${theme === 'dark' ? 'bg-primary' : 'bg-surface-container-low'}`}
           >
             <motion.div
               animate={{ x: theme === 'dark' ? 24 : 0 }}
-              className="w-6 h-6 rounded-full bg-white shadow-sm"
+              className="w-6 h-6 rounded-full bg-white shadow-ambient"
             />
           </div>
         </div>
@@ -113,7 +113,7 @@ export const SettingsScreen = () => {
 
       <section className="mb-10">
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">Business Details</h3>
-        <div className="bg-surface-lowest rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 p-6 space-y-6">
+        <div className="bg-surface-container-lowest rounded-3xl shadow-ambient p-6 space-y-6">
           
           <div>
             <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Brand Name</label>
@@ -122,12 +122,12 @@ export const SettingsScreen = () => {
               value={localBrandName}
               onChange={(e) => setLocalBrandName(e.target.value)}
               placeholder="e.g. Acme Corp" 
-              className="w-full bg-surface-low border border-transparent rounded-full text-sm font-bold text-on-surface focus:border-primary/30 focus:ring-4 focus:ring-primary/10 px-5 py-3.5 outline-none transition-all"
+              className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
             />
             <p className="text-[10px] text-on-surface-variant mt-2 ml-2 font-medium">This will appear on your invoices and receipts.</p>
           </div>
 
-          <div className="h-px bg-surface-low w-full"></div>
+          <div className="h-px bg-surface-container-low w-full"></div>
 
           <div className="space-y-4">
             <h4 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest ml-2 mb-4">Template Customization</h4>
@@ -153,10 +153,10 @@ export const SettingsScreen = () => {
                   <button
                     key={style}
                     onClick={() => setLocalTemplateConfig({ ...localTemplateConfig, style })}
-                    className={`py-3 px-2 rounded-2xl text-xs font-bold capitalize transition-all border ${
+                    className={`py-3 px-2 rounded-3xl text-xs font-bold capitalize transition-all ${
                       localTemplateConfig.style === style 
-                        ? 'bg-primary text-on-primary border-primary shadow-md' 
-                        : 'bg-surface-low text-on-surface-variant border-transparent hover:bg-surface-low/80'
+                        ? 'bg-primary text-on-primary shadow-ambient' 
+                        : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container-low/80'
                     }`}
                   >
                     {style}
@@ -166,7 +166,7 @@ export const SettingsScreen = () => {
             </div>
           </div>
 
-          <div className="h-px bg-surface-low w-full"></div>
+          <div className="h-px bg-surface-container-low w-full"></div>
 
           <div className="space-y-4">
             <h4 className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest ml-2 mb-4">Payment Details</h4>
@@ -177,7 +177,7 @@ export const SettingsScreen = () => {
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
                 placeholder="e.g. Chase Bank, GTBank" 
-                className="w-full bg-surface-low border border-transparent rounded-full text-sm font-bold text-on-surface focus:border-primary/30 focus:ring-4 focus:ring-primary/10 px-5 py-3.5 outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
               />
             </div>
             <div>
@@ -187,7 +187,7 @@ export const SettingsScreen = () => {
                 value={accountName}
                 onChange={(e) => setAccountName(e.target.value)}
                 placeholder="e.g. John Doe" 
-                className="w-full bg-surface-low border border-transparent rounded-full text-sm font-bold text-on-surface focus:border-primary/30 focus:ring-4 focus:ring-primary/10 px-5 py-3.5 outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
               />
             </div>
             <div>
@@ -197,14 +197,14 @@ export const SettingsScreen = () => {
                 value={accountNumber}
                 onChange={(e) => setAccountNumber(e.target.value)}
                 placeholder="e.g. 0123456789" 
-                className="w-full bg-surface-low border border-transparent rounded-full text-sm font-mono font-bold text-on-surface focus:border-primary/30 focus:ring-4 focus:ring-primary/10 px-5 py-3.5 outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-mono font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
               />
             </div>
           </div>
           
           <button 
             onClick={handleSaveDetails}
-            className="w-full mt-4 py-4 bg-primary text-on-primary rounded-full font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-xl shadow-primary/20"
+            className="w-full mt-4 py-4 bg-primary text-on-primary rounded-full font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-ambient shadow-primary/20"
           >
             {isSaved ? <Check size={18} strokeWidth={2.5} /> : <Save size={18} strokeWidth={2.5} />}
             {isSaved ? 'Saved!' : 'Save Details'}
@@ -214,18 +214,16 @@ export const SettingsScreen = () => {
 
       <section>
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">Currency</h3>
-        <div className="bg-surface-lowest rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 overflow-hidden">
+        <div className="bg-surface-container-lowest rounded-3xl shadow-ambient overflow-hidden">
           {CURRENCIES.map((c, index) => (
             <div 
               key={c.code}
               onClick={() => setCurrency(c)}
-              className={`flex items-center justify-between p-5 cursor-pointer hover:bg-surface-low transition-colors ${
-                index !== CURRENCIES.length - 1 ? 'border-b border-surface-low' : ''
-              }`}
+              className={`flex items-center justify-between p-5 cursor-pointer hover:bg-surface-container-low transition-colors`}
             >
               <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center font-black text-lg shadow-inner ${
-                  currency.code === c.code ? 'bg-primary text-on-primary' : 'bg-surface-low text-on-surface-variant'
+                  currency.code === c.code ? 'bg-primary text-on-primary' : 'bg-surface-container-low text-on-surface-variant'
                 }`}>
                   {c.symbol}
                 </div>
@@ -245,16 +243,16 @@ export const SettingsScreen = () => {
       </section>
       <section className="mt-10">
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">Backup & Sync</h3>
-        <div className="bg-surface-lowest rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 p-6 space-y-4">
+        <div className="bg-surface-container-lowest rounded-3xl shadow-ambient p-6 space-y-4">
           <div className="flex gap-3">
             <button 
               onClick={handleExport}
-              className="flex-1 py-4 bg-surface-low text-on-surface rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:bg-surface-low/80"
+              className="flex-1 py-4 bg-surface-container-low text-on-surface rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:bg-surface-container-low/80"
             >
               <Download size={18} />
               Export
             </button>
-            <label className="flex-1 py-4 bg-surface-low text-on-surface rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:bg-surface-low/80 cursor-pointer">
+            <label className="flex-1 py-4 bg-surface-container-low text-on-surface rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:bg-surface-container-low/80 cursor-pointer">
               <Upload size={18} />
               Import
               <input type="file" accept=".json" onChange={handleImport} className="hidden" />

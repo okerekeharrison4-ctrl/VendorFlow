@@ -2,12 +2,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #f0f2f5;
-  --color-surface: #f0f2f5;
-  --color-surface-low: #e5e7eb;
-  --color-surface-lowest: #f9f9f9;
-  --color-primary: #5c5f5d;
-  --color-on-primary: #f7f8f5;
+  --color-background: #f9f9f9;
+  --color-surface: #f9f9f9;
+  --color-surface-container-low: #f2f4f4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-highest: #e8eae9;
+  --color-surface-variant: #eaeced;
+  --color-primary: #141414;
+  --color-on-primary: #ffffff;
   --color-secondary: #006f1d;
   --color-secondary-container: #94f990;
   --color-on-secondary-container: #006017;
@@ -24,8 +26,10 @@
 :root.dark, body.dark {
   --color-background: #121212;
   --color-surface: #121212;
-  --color-surface-low: #1e1e1e;
-  --color-surface-lowest: #1a1a1a;
+  --color-surface-container-low: #1e1e1e;
+  --color-surface-container-lowest: #1a1a1a;
+  --color-surface-container-highest: #2a2a2a;
+  --color-surface-variant: #242424;
   --color-primary: #e5e5e5;
   --color-on-primary: #121212;
   --color-secondary: #94f990;
@@ -39,7 +43,7 @@
 }
 
 body {
-  background-color: #f0f2f5; /* Contrasting background for desktop view */
+  background-color: var(--color-background);
   color: var(--color-on-surface);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
@@ -63,4 +67,9 @@ body {
 }
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Custom shadow for the Effortless Curated Flow */
+.shadow-ambient {
+  box-shadow: 0 20px 40px rgba(45, 52, 53, 0.06);
 }

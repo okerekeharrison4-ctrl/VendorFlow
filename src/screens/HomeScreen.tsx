@@ -19,41 +19,40 @@ export const HomeScreen = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
-      className="pt-4 pb-32"
+      className="px-6 md:px-12 pt-4 md:pt-8 pb-32 md:pb-12"
     >
       <section className="mb-8">
         <h2 className="text-4xl font-black tracking-tighter text-on-surface mb-2">Dashboard</h2>
         <p className="text-on-surface-variant text-sm font-medium">Welcome back to your business overview.</p>
       </section>
 
-      <section className="flex flex-col gap-4 mb-8">
-        <div className="bg-secondary-container/20 p-8 rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-secondary/10 flex flex-col justify-between min-h-[180px]">
+      <section className="flex overflow-x-auto gap-4 mb-8 hide-scrollbar pb-4 -mx-6 px-6">
+        <div className="min-w-[280px] bg-secondary-container p-8 rounded-3xl shadow-ambient flex flex-col justify-between min-h-[180px]">
           <div className="flex items-center gap-2 mb-4">
             <AlertCircle className="text-secondary" size={16} />
             <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Amount Owed</span>
           </div>
-          <h2 className="text-4xl font-black tracking-tighter text-on-secondary-container break-all line-clamp-2">
+          <h2 className="text-4xl font-mono font-black tracking-tighter text-on-secondary-container break-all line-clamp-2">
             {formatCurrency(totalOwed, currency.symbol)}
           </h2>
           <p className="text-on-secondary-container/70 text-xs mt-2">{unpaidInvoices.length} active invoices</p>
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-primary-container/20 p-6 rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-primary/10 flex flex-col justify-between">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="text-primary" size={16} />
-              <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Paid</span>
-            </div>
-            <h3 className="text-3xl font-black tracking-tighter text-on-primary-container">
-              {invoices.filter(i => i.status === 'paid').length}
-            </h3>
+        <div className="min-w-[160px] bg-primary-container p-6 rounded-3xl shadow-ambient flex flex-col justify-between">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="text-primary" size={16} />
+            <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Paid</span>
           </div>
-          <div className="bg-surface-lowest p-6 rounded-[2rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 flex flex-col justify-between">
-            <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Total</span>
-            <h3 className="text-3xl font-black tracking-tighter text-on-surface">
-              {invoices.length}
-            </h3>
-          </div>
+          <h3 className="text-3xl font-mono font-black tracking-tighter text-on-primary-container">
+            {invoices.filter(i => i.status === 'paid').length}
+          </h3>
+        </div>
+        
+        <div className="min-w-[160px] bg-surface-container-lowest p-6 rounded-3xl shadow-ambient flex flex-col justify-between">
+          <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-4">Total</span>
+          <h3 className="text-3xl font-mono font-black tracking-tighter text-on-surface">
+            {invoices.length}
+          </h3>
         </div>
       </section>
 
@@ -62,7 +61,7 @@ export const HomeScreen = () => {
           <h3 className="text-lg font-extrabold tracking-tight text-on-surface">Recent Activity</h3>
           <button 
             onClick={() => navigate('/create')}
-            className="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-full font-bold shadow-lg active:scale-95 transition-all text-sm"
+            className="flex items-center gap-2 bg-primary text-on-primary px-6 py-3 rounded-3xl font-bold shadow-ambient active:scale-95 transition-all text-sm"
           >
             <Plus size={16} />
             New
@@ -70,8 +69,8 @@ export const HomeScreen = () => {
         </div>
 
         {invoices.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 px-6 bg-surface-lowest rounded-[2rem] border border-dashed border-outline-variant/20">
-            <div className="w-16 h-16 bg-surface-low rounded-full flex items-center justify-center mb-4 shadow-sm">
+          <div className="flex flex-col items-center justify-center py-16 px-6 bg-surface-container-lowest rounded-3xl ">
+            <div className="w-16 h-16 bg-surface-container-low rounded-full flex items-center justify-center mb-4 shadow-ambient">
               <FileText className="text-outline-variant" size={24} />
             </div>
             <h4 className="text-base font-bold text-on-surface mb-2">No invoices yet</h4>
@@ -85,20 +84,20 @@ export const HomeScreen = () => {
               <div 
                 key={invoice.id}
                 onClick={() => navigate(`/${invoice.status === 'paid' ? 'receipt' : 'preview'}/${invoice.id}`)}
-                className="bg-surface-lowest p-5 rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group hover:border-outline-variant/20"
+                className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between group"
               >
                 <div>
                   <h4 className="font-bold text-on-surface text-sm mb-1">{invoice.customerName}</h4>
                   <p className="text-on-surface-variant text-[10px] font-mono uppercase tracking-wider">{invoice.invoiceNumber}</p>
                 </div>
                 <div className="text-right flex flex-col items-end">
-                  <span className="font-black text-on-surface text-base tracking-tight">
+                  <span className="font-mono font-black text-on-surface text-base tracking-tight">
                     {formatCurrency(calculateTotal(invoice.items), currency.symbol)}
                   </span>
                   <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mt-2 ${
                     invoice.status === 'paid' 
-                      ? 'bg-secondary-container/50 text-secondary' 
-                      : 'bg-surface-low text-on-surface-variant'
+                      ? 'bg-secondary-container text-on-secondary-container' 
+                      : 'bg-surface-container-low text-on-surface-variant'
                   }`}>
                     {invoice.status}
                   </span>

@@ -14,7 +14,7 @@ const slides = [
         initial={{ rotate: -5 }}
         animate={{ rotate: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-[240px] bg-gradient-to-br from-surface-lowest to-surface-low rounded-[2rem] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-outline-variant/10 flex flex-col items-center text-center"
+        className="w-full max-w-[240px] bg-gradient-to-br from-surface-container-lowest to-surface-container-low rounded-3xl p-6 shadow-ambient flex flex-col items-center text-center"
       >
         <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2">Amount owed to you</span>
         <h3 className="text-4xl font-black text-on-surface tracking-tighter mb-4">₦14,500</h3>
@@ -35,14 +35,14 @@ const slides = [
         initial={{ scale: 0.9 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-[240px] bg-gradient-to-br from-surface-lowest to-surface-low rounded-[2rem] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-outline-variant/10"
+        className="w-full max-w-[240px] bg-gradient-to-br from-surface-container-lowest to-surface-container-low rounded-3xl p-6 shadow-ambient"
       >
         <div className="h-6 w-24 bg-outline-variant/20 rounded-full mb-6"></div>
         <div className="space-y-3">
-          <div className="h-10 bg-surface-lowest border border-outline-variant/20 rounded-full w-full flex items-center px-4">
+          <div className="h-10 bg-surface-container-lowest  rounded-full w-full flex items-center px-4">
             <span className="text-xs text-on-surface-variant font-bold">Item name...</span>
           </div>
-          <div className="w-full h-12 bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white rounded-full flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/20">
+          <div className="w-full h-12 bg-gradient-to-r from-[#25D366] to-[#128C7E] text-white rounded-full flex items-center justify-center gap-2 shadow-ambient shadow-[#25D366]/20">
             <Share2 size={16} strokeWidth={2.5} />
             <span className="text-sm font-bold tracking-wide">Share on WhatsApp</span>
           </div>
@@ -59,7 +59,7 @@ const slides = [
         initial={{ y: 20 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-[240px] bg-gradient-to-br from-surface-lowest to-surface-low rounded-[2rem] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-outline-variant/10 flex flex-col items-center"
+        className="w-full max-w-[240px] bg-gradient-to-br from-surface-container-lowest to-surface-container-low rounded-3xl p-6 shadow-ambient flex flex-col items-center"
       >
         <div className="w-16 h-16 bg-gradient-to-br from-secondary-container to-secondary/20 text-secondary rounded-full flex items-center justify-center mb-4">
           <Users2 size={32} />
@@ -78,7 +78,7 @@ const slides = [
         initial={{ y: 20 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-[240px] bg-gradient-to-br from-surface-lowest to-surface-low rounded-[2rem] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-outline-variant/10 flex flex-col items-center"
+        className="w-full max-w-[240px] bg-gradient-to-br from-surface-container-lowest to-surface-container-low rounded-3xl p-6 shadow-ambient flex flex-col items-center"
       >
         <div className="w-16 h-16 bg-gradient-to-br from-primary-container to-primary/20 text-primary rounded-full flex items-center justify-center mb-4">
           <Package size={32} />
@@ -97,9 +97,9 @@ const slides = [
         initial={{ y: 20 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-[240px] bg-gradient-to-br from-surface-lowest to-surface-low rounded-[2rem] p-6 shadow-[0_20px_40px_rgba(0,0,0,0.08)] border border-outline-variant/10 flex flex-col items-center"
+        className="w-full max-w-[240px] bg-gradient-to-br from-surface-container-lowest to-surface-container-low rounded-3xl p-6 shadow-ambient flex flex-col items-center"
       >
-        <div className="w-16 h-16 bg-gradient-to-br from-surface-low to-outline-variant/20 text-on-surface rounded-full flex items-center justify-center mb-4">
+        <div className="w-16 h-16 bg-gradient-to-br from-surface-container-low to-outline-variant/20 text-on-surface rounded-full flex items-center justify-center mb-4">
           <BarChart3 size={32} />
         </div>
         <h3 className="text-xl font-black text-on-surface tracking-tighter mb-1">Sales Analytics</h3>
@@ -134,7 +134,7 @@ export const OnboardingScreen = () => {
   };
 
   return (
-    <div className="absolute inset-0 bg-gradient-to-br from-surface-lowest to-surface-low z-50 flex flex-col">
+    <div className="absolute inset-0 bg-gradient-to-br from-surface-container-lowest to-surface-container-low z-50 flex flex-col">
       <div className="flex justify-end p-6">
         <button 
           onClick={finishOnboarding}
@@ -193,7 +193,7 @@ export const OnboardingScreen = () => {
 
         <button 
           onClick={handleNext}
-          className="w-full max-w-sm py-4 bg-primary text-on-primary rounded-full font-bold text-lg tracking-wide shadow-lg shadow-primary/20 active:scale-[0.98] transition-all hover:bg-primary/90"
+          className="w-full max-w-sm py-4 bg-primary text-on-primary rounded-full font-bold text-lg tracking-wide shadow-ambient shadow-primary/20 active:scale-[0.98] transition-all hover:bg-primary/90"
         >
           {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
         </button>

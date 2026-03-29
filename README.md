@@ -1,20 +1,20 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# VendorFlow
 
-# Run and deploy your AI Studio app
+VendorFlow is a professional vendor management and invoicing dashboard designed for efficiency and clarity.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/5e4f532f-fc73-4dea-875c-223265acbc7d
+- **Predictive Cash Flow Forecasting:** Uses historical payment data to predict future payments and highlight potential cash-flow gaps.
+- **Global Command Palette (Cmd+K):** A searchable, keyboard-driven interface for rapid navigation and action execution.
+- **Premium Animations:** Staggered list entrances, smooth status badge transitions, and layout morphing for a fluid, native feel.
+- **Skeleton Loading:** Provides a premium, native-feeling loading experience.
+- **Invoice & Client Management:** Manage your customer database and generate professional invoices.
 
-## Run Locally
+## Tech Stack
 
-**Prerequisites:**  Node.js
-
-
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- **React 18+** with **Vite**
+- **TypeScript**
+- **Tailwind CSS**
+- **Framer Motion** for animations
+- **Lucide React** for icons
+- **Zustand** for state management

@@ -93,11 +93,11 @@ export const CreateInvoiceScreen = () => {
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="pt-4 pb-40"
+      className="px-6 md:px-12 pt-4 md:pt-8 pb-40 md:pb-12"
     >
       <section className="mb-8">
         <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Your Brand Name</label>
-        <div className="bg-surface-lowest rounded-[1.5rem] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 focus-within:border-primary/30 focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+        <div className="bg-surface-container-low focus-within:bg-surface-container-lowest rounded-3xl p-4 shadow-ambient focus-within:ring-1 focus-within:ring-primary/20 transition-all">
           <input 
             type="text" 
             value={localBrandName}
@@ -110,7 +110,7 @@ export const CreateInvoiceScreen = () => {
 
       <section className="mb-10">
         <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Customer Name</label>
-        <div className="bg-surface-lowest rounded-[1.5rem] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 focus-within:border-primary/30 focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+        <div className="bg-surface-container-low focus-within:bg-surface-container-lowest rounded-3xl p-5 shadow-ambient focus-within:ring-1 focus-within:ring-primary/20 transition-all">
           <input 
             autoFocus
             type="text" 
@@ -129,7 +129,7 @@ export const CreateInvoiceScreen = () => {
 
         <div className="space-y-4">
           {items.map((item) => (
-            <div key={item.id} className="bg-surface-lowest p-5 rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 group focus-within:border-primary/30 focus-within:ring-4 focus-within:ring-primary/10 transition-all">
+            <div key={item.id} className="bg-surface-container-low focus-within:bg-surface-container-lowest p-5 rounded-3xl shadow-ambient group focus-within:ring-1 focus-within:ring-primary/20 transition-all">
               <input 
                 type="text" 
                 value={item.name}
@@ -139,23 +139,23 @@ export const CreateInvoiceScreen = () => {
               />
               
               <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center bg-surface-low rounded-full p-1 border border-outline-variant/5">
+                <div className="flex items-center bg-surface-container-low rounded-full p-1 ">
                   <button 
                     onClick={() => updateItem(item.id, 'quantity', Math.max(1, item.quantity - 1))}
-                    className="w-8 h-8 flex items-center justify-center text-on-surface-variant active:scale-90 transition-all bg-surface-lowest rounded-full shadow-sm"
+                    className="w-8 h-8 flex items-center justify-center text-on-surface-variant active:scale-90 transition-all bg-surface-container-lowest rounded-full shadow-ambient"
                   >
                     <Minus size={14} strokeWidth={3} />
                   </button>
                   <span className="w-10 text-center font-mono font-bold text-sm">{item.quantity}</span>
                   <button 
                     onClick={() => updateItem(item.id, 'quantity', item.quantity + 1)}
-                    className="w-8 h-8 flex items-center justify-center text-on-surface-variant active:scale-90 transition-all bg-surface-lowest rounded-full shadow-sm"
+                    className="w-8 h-8 flex items-center justify-center text-on-surface-variant active:scale-90 transition-all bg-surface-container-lowest rounded-full shadow-ambient"
                   >
                     <Plus size={14} strokeWidth={3} />
                   </button>
                 </div>
 
-                <div className="flex items-center gap-2 bg-surface-low px-4 py-2.5 rounded-full flex-1 border border-outline-variant/5">
+                <div className="flex items-center gap-2 bg-surface-container-low px-4 py-2.5 rounded-full flex-1 ">
                   <span className="text-on-surface-variant font-bold text-sm">{currency.symbol}</span>
                   <input 
                     type="number" 
@@ -181,7 +181,7 @@ export const CreateInvoiceScreen = () => {
 
         <button 
           onClick={handleAddItem}
-          className="w-full py-4 border-2 border-dashed border-outline-variant/20 rounded-[1.5rem] text-on-surface-variant font-bold text-sm flex items-center justify-center gap-2 hover:bg-surface-low hover:border-outline-variant/40 transition-all active:scale-[0.98]"
+          className="w-full py-4 bg-surface-container-low rounded-3xl text-on-surface-variant font-bold text-sm flex items-center justify-center gap-2 hover:bg-surface-container-lowest hover:shadow-ambient transition-all active:scale-[0.98]"
         >
           <Plus size={18} strokeWidth={2.5} />
           Add Another Item
@@ -191,10 +191,10 @@ export const CreateInvoiceScreen = () => {
       <section className="mb-6">
         <button 
           onClick={() => setShowBankDetails(!showBankDetails)}
-          className="w-full flex items-center justify-between py-4 px-5 bg-surface-lowest rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 text-on-surface active:scale-[0.98] transition-all"
+          className="w-full flex items-center justify-between py-4 px-5 bg-surface-container-lowest rounded-3xl shadow-ambient text-on-surface active:scale-[0.98] transition-all"
         >
           <h2 className="text-sm font-bold tracking-wide">Payment Details</h2>
-          <div className={`p-1 rounded-full bg-surface-low transition-transform duration-300 ${showBankDetails ? 'rotate-180' : ''}`}>
+          <div className={`p-1 rounded-full bg-surface-container-low transition-transform duration-300 ${showBankDetails ? 'rotate-180' : ''}`}>
             <ChevronDown size={18} strokeWidth={2.5} />
           </div>
         </button>
@@ -204,7 +204,7 @@ export const CreateInvoiceScreen = () => {
             initial={{ opacity: 0, height: 0, marginTop: 0 }}
             animate={{ opacity: 1, height: 'auto', marginTop: 12 }}
             exit={{ opacity: 0, height: 0, marginTop: 0 }}
-            className="bg-surface-lowest p-6 rounded-[1.5rem] shadow-[0_4px_20px_rgba(0,0,0,0.02)] border border-outline-variant/5 space-y-5 overflow-hidden"
+            className="bg-surface-container-lowest p-6 rounded-3xl shadow-ambient space-y-5 overflow-hidden"
           >
             <div>
               <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Bank Name</label>
@@ -213,7 +213,7 @@ export const CreateInvoiceScreen = () => {
                 value={localBankName}
                 onChange={(e) => setLocalBankName(e.target.value)}
                 placeholder="e.g. Chase Bank" 
-                className="w-full bg-surface-low border border-transparent rounded-full text-sm font-bold text-on-surface focus:border-primary/30 focus:ring-4 focus:ring-primary/10 px-5 py-3.5 outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
               />
             </div>
             <div>
@@ -223,7 +223,7 @@ export const CreateInvoiceScreen = () => {
                 value={localAccountName}
                 onChange={(e) => setLocalAccountName(e.target.value)}
                 placeholder="e.g. John Doe" 
-                className="w-full bg-surface-low border border-transparent rounded-full text-sm font-bold text-on-surface focus:border-primary/30 focus:ring-4 focus:ring-primary/10 px-5 py-3.5 outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
               />
             </div>
             <div>
@@ -233,24 +233,24 @@ export const CreateInvoiceScreen = () => {
                 value={localAccountNumber}
                 onChange={(e) => setLocalAccountNumber(e.target.value)}
                 placeholder="e.g. 0123456789" 
-                className="w-full bg-surface-low border border-transparent rounded-full text-sm font-mono font-bold text-on-surface focus:border-primary/30 focus:ring-4 focus:ring-primary/10 px-5 py-3.5 outline-none transition-all"
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-mono font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
               />
             </div>
           </motion.div>
         )}
       </section>
 
-      <div className="fixed bottom-0 left-0 w-full bg-surface-lowest/80 backdrop-blur-2xl border-t border-outline-variant/10 p-6 pb-safe shadow-[0_-20px_40px_rgba(0,0,0,0.05)] z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-surface-container-lowest p-6 pb-safe shadow-ambient z-50">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-6">
           <div>
             <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Total</p>
-            <p className="text-3xl font-black tracking-tighter text-on-surface">{formatCurrency(total, currency.symbol)}</p>
+            <p className="text-3xl font-mono font-black tracking-tighter text-on-surface">{formatCurrency(total, currency.symbol)}</p>
           </div>
           <button 
             onClick={handleSaveAndShare}
             disabled={!isValid}
             className={`flex-1 py-4 rounded-full font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
-              isValid ? 'bg-primary text-on-primary shadow-xl shadow-primary/20' : 'bg-surface-low text-outline-variant cursor-not-allowed'
+              isValid ? 'bg-primary text-on-primary shadow-ambient shadow-primary/20' : 'bg-surface-container-low text-outline-variant cursor-not-allowed'
             }`}
           >
             Save & Share

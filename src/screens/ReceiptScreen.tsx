@@ -219,19 +219,23 @@ export const ReceiptScreen = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      className="pt-8 pb-32 flex flex-col"
+      className="px-6 md:px-12 pt-8 md:pt-12 pb-32 md:pb-12 flex flex-col items-center"
     >
       <div className="w-full overflow-x-auto hide-scrollbar pb-4 -mx-2 px-2 sm:mx-0 sm:px-0">
-        <div ref={receiptRef} className="relative w-full flex flex-col bg-background pb-6 overflow-hidden">
+        <div 
+          ref={receiptRef}
+          layoutId={`invoice-${id}`}
+          className="relative w-full max-w-md mx-auto flex flex-col items-center bg-background pb-6 overflow-hidden min-w-[380px] sm:min-w-full"
+        >
         <div className="text-center mb-5 pt-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-3 shadow-sm" style={{ backgroundColor: templateColor ? displayColor20 : 'var(--color-secondary-container)', color: templateColor ? displayColor : 'var(--color-secondary)' }}>
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-3 shadow-ambient" style={{ backgroundColor: templateColor ? displayColor20 : 'var(--color-secondary-container)', color: templateColor ? displayColor : 'var(--color-secondary)' }}>
             <CheckCircle2 size={28} strokeWidth={2.5} />
           </div>
           <h2 className="text-2xl font-extrabold tracking-tight text-on-surface mb-1">PAID</h2>
           <p className="text-on-surface-variant text-sm">Payment successfully recorded for {invoice.customerName}.</p>
         </div>
 
-        <div className="w-full bg-surface-lowest rounded-[2rem] shadow-[0_20px_40px_rgba(0,0,0,0.04)] overflow-hidden border border-outline-variant/5">
+        <div className="w-full bg-surface-container-lowest rounded-3xl shadow-ambient overflow-hidden ">
           {/* Header Section */}
           <div className="p-5 pb-4">
             <div className="flex justify-between items-start mb-5">
@@ -248,19 +252,19 @@ export const ReceiptScreen = () => {
 
             {/* Bento Grid for Info */}
             <div className="grid grid-cols-2 gap-2 mb-4">
-              <div className="bg-surface-low/50 rounded-2xl p-4">
+              <div className="bg-surface-container-low rounded-3xl p-4">
                 <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Receipt For</p>
                 <p className="text-sm font-bold text-on-surface">{invoice.customerName}</p>
               </div>
-              <div className="bg-surface-low/50 rounded-2xl p-4">
+              <div className="bg-surface-container-low rounded-3xl p-4">
                 <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Paid On</p>
                 <p className="text-sm font-bold text-on-surface">{formatDate(invoice.paidAt || Date.now())}</p>
               </div>
             </div>
             
-            <div className="rounded-2xl p-5 flex flex-col items-center justify-center border w-full overflow-hidden" style={{ backgroundColor: templateColor ? displayColor10 : 'var(--color-secondary-container)', borderColor: templateColor ? displayColor20 : 'var(--color-secondary)' }}>
+            <div className="rounded-3xl p-5 flex flex-col items-center justify-center border w-full overflow-hidden" style={{ backgroundColor: templateColor ? displayColor10 : 'var(--color-secondary-container)', borderColor: templateColor ? displayColor20 : 'var(--color-secondary)' }}>
               <p className="text-[10px] font-bold tracking-widest uppercase mb-1 text-center" style={{ color: templateColor ? displayColor : 'var(--color-secondary)' }}>Total Amount Paid</p>
-              <h3 className="text-3xl font-black tracking-tighter break-words text-center" style={{ color: templateColor ? displayColor : 'var(--color-on-secondary-container)' }}>
+              <h3 className="text-3xl font-mono font-black tracking-tighter break-words text-center" style={{ color: templateColor ? displayColor : 'var(--color-on-secondary-container)' }}>
                 {formatCurrency(total, currency.symbol)}
               </h3>
             </div>
@@ -268,9 +272,9 @@ export const ReceiptScreen = () => {
 
           {/* Ticket Perforation Divider */}
           <div className="relative h-6 flex items-center justify-center overflow-hidden">
-            <div className="absolute left-[-16px] w-8 h-8 bg-background rounded-full border border-outline-variant/10"></div>
+            <div className="absolute left-[-16px] w-8 h-8 bg-background rounded-full "></div>
             <div className="w-full border-t-2 border-dashed border-outline-variant/20 mx-6"></div>
-            <div className="absolute right-[-16px] w-8 h-8 bg-background rounded-full border border-outline-variant/10"></div>
+            <div className="absolute right-[-16px] w-8 h-8 bg-background rounded-full "></div>
           </div>
 
           {/* Items Section */}
@@ -330,7 +334,7 @@ export const ReceiptScreen = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="bg-surface-low rounded-2xl p-4 flex items-center justify-between"
+              className="bg-surface-container-low rounded-3xl p-4 flex items-center justify-between"
             >
               <span className="text-sm font-medium text-on-surface">Send a clean receipt to your customer</span>
               <button 
@@ -362,14 +366,14 @@ export const ReceiptScreen = () => {
         <button 
           onClick={() => setShowShareMenu(true)}
           disabled={isSharing}
-          className="w-full py-4 bg-primary text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all disabled:opacity-70"
+          className="w-full py-4 bg-primary text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 shadow-ambient active:scale-[0.98] transition-all disabled:opacity-70"
         >
           {isSharing ? <Loader2 size={18} className="animate-spin" strokeWidth={2.5} /> : <Share2 size={18} strokeWidth={2.5} />}
           {isSharing ? 'Preparing...' : 'Share Receipt'}
         </button>
         <button 
           onClick={() => navigate('/')}
-          className="w-full py-4 text-on-surface-variant font-semibold text-sm hover:bg-surface-low rounded-full transition-colors flex items-center justify-center gap-2"
+          className="w-full py-4 text-on-surface-variant font-semibold text-sm hover:bg-surface-container-low rounded-full transition-colors flex items-center justify-center gap-2"
         >
           <Home size={18} strokeWidth={2.5} />
           Return Home
@@ -398,7 +402,7 @@ export const ReceiptScreen = () => {
               initial={{ y: 100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
-              className="bg-surface-lowest w-full max-w-sm rounded-[2rem] p-6 space-y-3 shadow-2xl mb-4 sm:mb-0"
+              className="bg-surface-container-lowest w-full max-w-sm rounded-3xl p-6 space-y-3 shadow-ambient mb-4 sm:mb-0"
               onClick={e => e.stopPropagation()}
             >
               <h3 className="text-lg font-extrabold text-on-surface mb-4">Share or Save</h3>
@@ -436,13 +440,13 @@ export const ReceiptScreen = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleShareAction('share_image')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       Image
                     </button>
                     <button 
                       onClick={() => handleShareAction('share_pdf')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       PDF
                     </button>
@@ -454,13 +458,13 @@ export const ReceiptScreen = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleShareAction('download_image')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       Image
                     </button>
                     <button 
                       onClick={() => handleShareAction('download_pdf')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       PDF
                     </button>
@@ -472,13 +476,13 @@ export const ReceiptScreen = () => {
                   <div className="flex gap-2">
                     <button 
                       onClick={() => handleShareAction('print')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       Print
                     </button>
                     <button 
                       onClick={() => handleShareAction('share_text')}
-                      className="flex-1 py-3.5 bg-surface-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
+                      className="flex-1 py-3.5 bg-surface-container-low text-on-surface rounded-full font-bold text-sm transition-all active:scale-[0.98]"
                     >
                       Text Only
                     </button>
