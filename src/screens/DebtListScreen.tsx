@@ -66,7 +66,7 @@ export const DebtListScreen = () => {
                       </div>
                     </div>
                     <div className="text-right flex flex-col items-end">
-                      <span className="block text-xl font-mono font-black tracking-tight text-on-surface">
+                      <span className="block text-xl font-mono font-black tracking-tight text-on-surface truncate max-w-full" title={formatCurrency(calculateTotal(invoice.items), currency.symbol)}>
                         {formatCurrency(calculateTotal(invoice.items), currency.symbol)}
                       </span>
                       <motion.span 
@@ -109,7 +109,7 @@ export const DebtListScreen = () => {
                       </div>
                     </div>
                     <div className="text-right flex flex-col items-end">
-                      <span className="block text-xl font-mono font-black tracking-tight text-on-surface-variant">
+                      <span className="block text-xl font-mono font-black tracking-tight text-on-surface-variant truncate max-w-full" title={formatCurrency(calculateTotal(invoice.items), currency.symbol)}>
                         {formatCurrency(calculateTotal(invoice.items), currency.symbol)}
                       </span>
                       <motion.span 

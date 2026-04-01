@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useStore } from '../store/StoreContext';
 import { motion } from 'motion/react';
 import { Plus, Search, Edit2, Trash2, Mail, Phone } from 'lucide-react';
+import { generateId } from '../utils/helpers';
 
 const container = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.05 } }
 };
 
-const item = {
+const itemVariant = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0 }
 };
@@ -37,9 +38,9 @@ export const ClientsScreen = () => {
     if (!formData.name.trim()) return;
 
     if (editingId) {
-      updateClient(editingId, formData);
+      updateClient({ ...formData, id: editingId });
     } else {
-      addClient(formData);
+      addClient({ ...formData, id: generateId() });
     }
 
     setIsAdding(false);
@@ -177,10 +178,10 @@ export const ClientsScreen = () => {
                 <p>No clients found.</p>
               </div>
             ) : (
-              filteredClients.map(client => (
+              filteredClients.map((client, index) => (
                 <motion.div 
-                  key={client.id} 
-                  variants={item}
+                  key={client.id || index} 
+                  variants={itemVariant}
                   className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient"
                 >
                   <div className="flex justify-between items-start mb-2">

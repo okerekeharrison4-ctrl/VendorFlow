@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Invoice, Currency, CURRENCIES, BankDetails, Client, CatalogItem, TemplateConfig } from '../types';
+import { Invoice, Currency, CURRENCIES, BankDetails, Client, CatalogItem, TemplateConfig, RecurringInvoice } from '../types';
 import { getEncryptedData, saveEncryptedData } from '../services/storageService';
+import { generateId, generateInvoiceNumber } from '../utils/helpers';
 
 type StoreContextType = {
   invoices: Invoice[];
@@ -15,6 +16,14 @@ type StoreContextType = {
   isLoading: boolean;
   theme: 'light' | 'dark';
   isPaletteOpen: boolean;
+  isPremium: boolean;
+  logoUrl: string | null;
+  recurringInvoices: RecurringInvoice[];
+  setIsPremium: (isPremium: boolean) => void;
+  setLogoUrl: (url: string | null) => void;
+  addRecurringInvoice: (invoice: RecurringInvoice) => void;
+  updateRecurringInvoice: (invoice: RecurringInvoice) => void;
+  deleteRecurringInvoice: (id: string) => void;
   setCurrency: (currency: Currency) => void;
   setBankDetails: (details: BankDetails | null) => void;
   setBrandName: (name: string) => void;
@@ -47,7 +56,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [bankDetails, setBankDetailsState] = useState<BankDetails | null>(null);
   const [brandName, setBrandNameState] = useState<string>('');
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
+  const [isPremium, setIsPremiumState] = useState<boolean>(false);
+  const [logoUrl, setLogoUrlState] = useState<string | null>(null);
+  const [recurringInvoices, setRecurringInvoices] = useState<RecurringInvoice[]>([]);
   const [theme, setThemeState] = useState<'light' | 'dark'>('light');
+
+  const addRecurringInvoice = (invoice: RecurringInvoice) => setRecurringInvoices(prev => [invoice, ...prev]);
+  const updateRecurringInvoice = (invoice: RecurringInvoice) => setRecurringInvoices(prev => prev.map(i => i.id === invoice.id ? invoice : i));
+  const deleteRecurringInvoice = (id: string) => setRecurringInvoices(prev => prev.filter(i => i.id !== id));
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -65,9 +81,16 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       const savedOnboarding = await getEncryptedData('onboarding') === 'true';
       const savedTheme = await getEncryptedData('theme') || 'light';
 
+      const savedRecurringInvoices = await getEncryptedData('recurring_invoices') || [];
+      const savedIsPremium = await getEncryptedData('is_premium') === 'true';
+      const savedLogoUrl = await getEncryptedData('logo_url') || null;
+
       setInvoices(savedInvoices);
       setClients(savedClients);
       setCatalog(savedCatalog);
+      setRecurringInvoices(savedRecurringInvoices);
+      setIsPremium(savedIsPremium);
+      setLogoUrl(savedLogoUrl);
       setTemplateConfigState(savedTemplate);
       setCurrencyState(savedCurrency);
       setBankDetailsState(savedBankDetails);
@@ -103,8 +126,54 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (isLoading) return;
-    saveEncryptedData('catalog', catalog);
-  }, [catalog, isLoading]);
+    saveEncryptedData('recurring_invoices', recurringInvoices);
+  }, [recurringInvoices, isLoading]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    saveEncryptedData('is_premium', isPremium.toString());
+  }, [isPremium, isLoading]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    saveEncryptedData('logo_url', logoUrl);
+  }, [logoUrl, isLoading]);
+
+  useEffect(() => {
+    if (isLoading) return;
+    const now = Date.now();
+    recurringInvoices.forEach(recurring => {
+      if (recurring.isActive && recurring.nextRun <= now) {
+        const newInvoice: Invoice = {
+          id: generateId(),
+          invoiceNumber: generateInvoiceNumber(),
+          customerName: recurring.customerId,
+          items: recurring.items,
+          createdAt: now,
+          updatedAt: now,
+          status: 'unpaid',
+        };
+        addInvoice(newInvoice);
+        
+        const nextRun = new Date(recurring.nextRun);
+        if (recurring.frequency === 'daily') nextRun.setDate(nextRun.getDate() + 1);
+        else if (recurring.frequency === 'weekly') nextRun.setDate(nextRun.getDate() + 7);
+        else if (recurring.frequency === 'monthly') nextRun.setMonth(nextRun.getMonth() + 1);
+        
+        updateRecurringInvoice({ ...recurring, nextRun: nextRun.getTime() });
+      }
+    });
+  }, [recurringInvoices, isLoading]);
+
+  const setIsPremium = (isPremium: boolean) => {
+    setIsPremiumState(isPremium);
+    saveEncryptedData('is_premium', isPremium.toString());
+  };
+
+  const setLogoUrl = (url: string | null) => {
+    setLogoUrlState(url);
+    saveEncryptedData('logo_url', url);
+  };
 
   const setCurrency = (curr: Currency) => {
     setCurrencyState(curr);
@@ -162,6 +231,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   return (
     <StoreContext.Provider value={{
       invoices, clients, catalog, currency, hasCompletedOnboarding, bankDetails, brandName, templateConfig, lastSyncedAt, isLoading, theme, isPaletteOpen,
+      isPremium,
+      logoUrl,
+      recurringInvoices,
+      setIsPremium,
+      setLogoUrl,
+      addRecurringInvoice,
+      updateRecurringInvoice,
+      deleteRecurringInvoice,
       setCurrency, setBankDetails, setBrandName, setTemplateConfig, toggleTheme, togglePalette,
       addInvoice, updateInvoice, deleteInvoice, markAsPaid, getInvoice,
       addClient, updateClient, deleteClient,

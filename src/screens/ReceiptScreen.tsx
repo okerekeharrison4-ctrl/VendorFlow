@@ -8,10 +8,11 @@ import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useAdSystem } from '../hooks/useAdSystem';
 import { MockAdVideo } from '../components/MockAdVideo';
+import { TemplateRenderer } from '../components/TemplateRenderer';
 import { track } from '../utils/analytics';
 
 export const ReceiptScreen = () => {
-  const { getInvoice, currency, theme } = useStore();
+  const { getInvoice, currency, theme, isPremium, logoUrl } = useStore();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const receiptRef = useRef<HTMLDivElement>(null);
@@ -26,10 +27,10 @@ export const ReceiptScreen = () => {
   const invoice = getInvoice(id || '');
 
   useEffect(() => {
-    if (invoice && hasRewarded('receipt', invoice.id)) {
+    if (invoice && (hasRewarded('receipt', invoice.id) || isPremium)) {
       setRemoveWatermark(true);
     }
-  }, [invoice, hasRewarded]);
+  }, [invoice, hasRewarded, isPremium]);
 
   useEffect(() => {
     // Micro-delay before showing reward prompt
@@ -222,12 +223,17 @@ export const ReceiptScreen = () => {
       className="px-6 md:px-12 pt-8 md:pt-12 pb-32 md:pb-12 flex flex-col items-center"
     >
       <div className="w-full overflow-x-auto hide-scrollbar pb-4 -mx-2 px-2 sm:mx-0 sm:px-0">
-        <div 
+        <motion.div 
           ref={receiptRef}
           layoutId={`invoice-${id}`}
           className="relative w-full max-w-md mx-auto flex flex-col items-center bg-background pb-6 overflow-hidden min-w-[380px] sm:min-w-full"
         >
         <div className="text-center mb-5 pt-2">
+          {isPremium && logoUrl && (
+            <div className="mb-4">
+              <img src={logoUrl} alt="Logo" className="w-20 h-20 object-contain mx-auto" referrerPolicy="no-referrer" />
+            </div>
+          )}
           <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-3 shadow-ambient" style={{ backgroundColor: templateColor ? displayColor20 : 'var(--color-secondary-container)', color: templateColor ? displayColor : 'var(--color-secondary)' }}>
             <CheckCircle2 size={28} strokeWidth={2.5} />
           </div>
@@ -236,19 +242,16 @@ export const ReceiptScreen = () => {
         </div>
 
         <div className="w-full bg-surface-container-lowest rounded-3xl shadow-ambient overflow-hidden ">
-          {/* Header Section */}
-          <div className="p-5 pb-4">
-            <div className="flex justify-between items-start mb-5">
-              <div>
-                {invoice.brandName && (
-                  <p className="text-sm font-bold text-on-surface tracking-tight">{invoice.brandName}</p>
-                )}
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Receipt</p>
-                <p className="text-xs font-mono text-on-surface-variant">{invoice.invoiceNumber}</p>
-              </div>
-            </div>
+          <TemplateRenderer 
+            invoice={invoice} 
+            templateConfig={invoice.template || { color: '#000000', style: 'modern' }} 
+            total={total}
+            currencySymbol={currency.symbol}
+            isPremium={isPremium}
+            logoUrl={logoUrl}
+            isPaid={true}
+            removeWatermark={removeWatermark}
+          />
 
             {/* Bento Grid for Info */}
             <div className="grid grid-cols-2 gap-2 mb-4">
@@ -264,11 +267,10 @@ export const ReceiptScreen = () => {
             
             <div className="rounded-3xl p-5 flex flex-col items-center justify-center border w-full overflow-hidden" style={{ backgroundColor: templateColor ? displayColor10 : 'var(--color-secondary-container)', borderColor: templateColor ? displayColor20 : 'var(--color-secondary)' }}>
               <p className="text-[10px] font-bold tracking-widest uppercase mb-1 text-center" style={{ color: templateColor ? displayColor : 'var(--color-secondary)' }}>Total Amount Paid</p>
-              <h3 className="text-3xl font-mono font-black tracking-tighter break-words text-center" style={{ color: templateColor ? displayColor : 'var(--color-on-secondary-container)' }}>
+              <h3 className="text-2xl sm:text-3xl font-mono font-black tracking-tighter break-all sm:break-words text-center" style={{ color: templateColor ? displayColor : 'var(--color-on-secondary-container)' }} title={formatCurrency(total, currency.symbol)}>
                 {formatCurrency(total, currency.symbol)}
               </h3>
             </div>
-          </div>
 
           {/* Ticket Perforation Divider */}
           <div className="relative h-6 flex items-center justify-center overflow-hidden">
@@ -282,9 +284,9 @@ export const ReceiptScreen = () => {
             <p className="text-[10px] font-bold tracking-widest text-outline-variant uppercase mb-4">Details</p>
             <div className="space-y-3">
               {invoice.items.map(item => (
-                <div key={item.id} className="flex justify-between items-center">
-                  <span className="font-bold text-on-surface text-sm">{item.name}</span>
-                  <span className="font-mono font-bold text-on-surface text-sm">
+                <div key={item.id} className="flex justify-between items-start gap-4">
+                  <span className="font-bold text-on-surface text-sm break-words flex-1">{item.name}</span>
+                  <span className="font-mono font-bold text-on-surface text-sm whitespace-nowrap text-right mt-0.5">
                     {formatCurrency(item.quantity * item.price, currency.symbol)}
                   </span>
                 </div>
@@ -324,7 +326,7 @@ export const ReceiptScreen = () => {
             </p>
           </div>
         )}
-      </div>
+      </motion.div>
       </div>
 
       <div className="w-full max-w-md mt-4 space-y-4">

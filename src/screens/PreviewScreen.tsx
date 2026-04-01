@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { formatCurrency, calculateTotal, formatDate, isColorDark } from '../utils/helpers';
 import { motion, AnimatePresence } from 'motion/react';
 import { Share2, CheckCircle2, Loader2 } from 'lucide-react';
+import { TemplateRenderer } from '../components/TemplateRenderer';
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useAdSystem } from '../hooks/useAdSystem';
@@ -11,7 +12,7 @@ import { MockAdVideo } from '../components/MockAdVideo';
 import { track } from '../utils/analytics';
 
 export const PreviewScreen = () => {
-  const { getInvoice, currency, markAsPaid, theme } = useStore();
+  const { getInvoice, currency, markAsPaid, theme, isPremium, logoUrl } = useStore();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const invoiceRef = useRef<HTMLDivElement>(null);
@@ -26,10 +27,10 @@ export const PreviewScreen = () => {
   const invoice = getInvoice(id || '');
 
   useEffect(() => {
-    if (invoice && hasRewarded('invoice', invoice.id)) {
+    if (invoice && (hasRewarded('invoice', invoice.id) || isPremium)) {
       setRemoveWatermark(true);
     }
-  }, [invoice, hasRewarded]);
+  }, [invoice, hasRewarded, isPremium]);
 
   useEffect(() => {
     // Micro-delay before showing reward prompt
@@ -236,151 +237,22 @@ export const PreviewScreen = () => {
       className="px-6 md:px-12 pt-4 md:pt-8 pb-48 md:pb-12"
     >
       <div className="w-full overflow-x-auto hide-scrollbar pb-4 -mx-2 px-2 sm:mx-0 sm:px-0">
-        <div 
+        <motion.div 
           ref={invoiceRef}
           layoutId={`invoice-${id}`}
-          className="relative bg-surface-container-lowest rounded-3xl shadow-ambient overflow-hidden  min-w-[380px] sm:min-w-full mx-auto"
+          className="relative bg-white rounded-3xl shadow-ambient overflow-hidden min-w-[380px] sm:min-w-full mx-auto"
         >
-        {/* Header Section */}
-        <div className="p-5 sm:p-6 pb-4">
-          <div className="flex justify-between items-start mb-5">
-            <div>
-              <AnimatePresence mode="wait">
-                {isPaid ? (
-                  <motion.div
-                    key="paid"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-[10px] font-bold tracking-widest uppercase mb-4"
-                  >
-                    <CheckCircle2 size={12} />
-                    Paid
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="unpaid"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="hide-on-export inline-flex items-center gap-1.5 px-3 py-1 bg-surface-container-low text-on-surface-variant rounded-full text-[10px] font-bold tracking-widest uppercase mb-4"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-outline-variant"></span>
-                    Unpaid
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              {invoice.brandName && (
-                <p className="text-sm font-bold text-on-surface tracking-tight">{invoice.brandName}</p>
-              )}
-            </div>
-            <div className="text-right">
-              <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Invoice</p>
-              <p className="text-xs font-mono text-on-surface-variant">{invoice.invoiceNumber}</p>
-            </div>
-          </div>
-          
-          <div className="mb-4 w-full overflow-hidden">
-            <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Total Due</p>
-            <h1 
-              className="text-3xl sm:text-4xl font-mono font-black tracking-tighter break-words"
-              style={{ color: displayColor || 'inherit' }}
-            >
-              {formatCurrency(total, currency.symbol)}
-            </h1>
-          </div>
-
-          {/* Bento Grid for Info */}
-          <div className="grid grid-cols-2 gap-2 sm:gap-3">
-            <div className="bg-surface-container-low rounded-3xl p-4">
-              <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Billed To</p>
-              <p className="text-sm font-bold text-on-surface">{invoice.customerName}</p>
-            </div>
-            <div className="bg-surface-container-low rounded-3xl p-4">
-              <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Date</p>
-              <p className="text-sm font-bold text-on-surface">{formatDate(invoice.createdAt)}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Ticket Perforation Divider */}
-        <div className="relative h-6 flex items-center justify-center overflow-hidden">
-          <div className="absolute left-[-16px] w-8 h-8 bg-background rounded-full "></div>
-          <div className="w-full border-t-2 border-dashed border-outline-variant/20 mx-6"></div>
-          <div className="absolute right-[-16px] w-8 h-8 bg-background rounded-full "></div>
-        </div>
-
-        {/* Items Section */}
-        <div className="p-5 sm:p-6 pt-2">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-on-surface-variant mb-4">Itemized Charges</h3>
-          
-          <div className="space-y-3">
-            {invoice.items.map((item) => (
-              <div key={item.id} className="flex justify-between items-start group">
-                <div className="pr-4">
-                  <h4 className="text-sm font-bold text-on-surface">{item.name}</h4>
-                  <p className="text-on-surface-variant text-xs mt-1 font-mono">
-                    {item.quantity} × {formatCurrency(item.price, currency.symbol)}
-                  </p>
-                </div>
-                <span className="text-sm font-mono font-bold text-on-surface whitespace-nowrap mt-0.5">
-                  {formatCurrency(item.quantity * item.price, currency.symbol)}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Payment Details Section */}
-        {invoice.bankDetails && (
-          <div className="px-5 sm:px-6 pb-5">
-            <div 
-              className="text-white rounded-3xl p-5 relative overflow-hidden"
-              style={{ backgroundColor: invoice.template?.color || '#141414' }}
-            >
-              {/* Decorative gradient blob */}
-              <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
-              
-              <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/50 mb-4 relative z-10">Payment Details</h3>
-              <div className="space-y-2 relative z-10">
-                {invoice.bankDetails.bankName && <p className="text-sm font-bold">{invoice.bankDetails.bankName}</p>}
-                {invoice.bankDetails.accountNumber && <p className="text-xl font-mono font-bold tracking-wider text-secondary-container select-all">{invoice.bankDetails.accountNumber}</p>}
-                {invoice.bankDetails.accountName && <p className="text-base font-medium text-white select-all">{invoice.bankDetails.accountName}</p>}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Decorative Barcode */}
-        <div className="px-5 sm:px-6 pb-4 flex justify-center opacity-20">
-          <div className="h-8 w-full max-w-[200px] flex gap-1 justify-center items-center">
-            {[...Array(30)].map((_, i) => (
-              <div key={i} className="h-full bg-on-surface" style={{ width: `${Math.random() * 4 + 1}px` }}></div>
-            ))}
-          </div>
-        </div>
-
-        {/* App Branding Footer */}
-        {!removeWatermark && (
-          <div className="px-5 sm:px-6 pb-5 flex items-center justify-center gap-2 opacity-40">
-            <span className="text-[10px] font-bold uppercase tracking-widest">Generated by</span>
-            <div className="flex items-center gap-1">
-              <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="100" height="100" rx="24" fill="currentColor" />
-                <path d="M30 34L50 68L70 34" stroke="white" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              <span className="text-xs font-black tracking-tight">VendorFlow</span>
-            </div>
-          </div>
-        )}
-
-        {/* Watermark */}
-        {!removeWatermark && (
-          <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden z-0">
-            <p className="text-4xl sm:text-5xl md:text-6xl font-black text-on-surface opacity-[0.03] -rotate-45 select-none whitespace-nowrap">
-              VendorFlow
-            </p>
-          </div>
-        )}
-      </div>
+          <TemplateRenderer 
+            invoice={invoice} 
+            templateConfig={invoice.template || { color: '#000000', style: 'modern' }} 
+            total={total}
+            currencySymbol={currency.symbol}
+            isPremium={isPremium}
+            logoUrl={logoUrl}
+            isPaid={isPaid}
+            removeWatermark={removeWatermark}
+          />
+        </motion.div>
       </div>
 
       <div className="fixed bottom-0 left-0 w-full bg-surface-container-lowest  p-6 pb-safe shadow-ambient z-40">

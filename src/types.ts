@@ -54,9 +54,19 @@ export type CatalogItem = {
   createdAt: number;
 };
 
+export type RecurringInvoice = {
+  id: string;
+  customerId: string;
+  items: InvoiceItem[];
+  frequency: 'daily' | 'weekly' | 'monthly';
+  nextRun: number;
+  isActive: boolean;
+  createdAt: number;
+};
+
 export type TemplateConfig = {
   color: string;
-  style: 'modern' | 'classic' | 'minimal';
+  style: 'modern' | 'classic' | 'minimal' | 'bold' | 'elegant' | 'corporate';
 };
 
 export type Invoice = {

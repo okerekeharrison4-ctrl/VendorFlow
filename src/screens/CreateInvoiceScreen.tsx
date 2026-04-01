@@ -7,7 +7,7 @@ import { motion } from 'motion/react';
 import { Plus, Minus, Trash2, Send, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const CreateInvoiceScreen = () => {
-  const { addInvoice, currency, bankDetails, setBankDetails, brandName, setBrandName, templateConfig } = useStore();
+  const { addInvoice, currency, bankDetails, setBankDetails, brandName, setBrandName, templateConfig, clients, catalog } = useStore();
   const navigate = useNavigate();
 
   const [customerName, setCustomerName] = useState('');
@@ -33,6 +33,22 @@ export const CreateInvoiceScreen = () => {
 
   const total = calculateTotal(items);
   const isValid = customerName.trim() !== '' && items.some(i => i.name.trim() !== '' && i.price > 0);
+
+  const handleCustomerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    setCustomerName(name);
+  };
+
+  const handleItemNameChange = (id: string, name: string) => {
+    updateItem(id, 'name', name);
+  };
+
+  const handleItemNameBlur = (id: string, name: string) => {
+    const catalogItem = catalog.find(c => c.name === name);
+    if (catalogItem) {
+      updateItem(id, 'price', catalogItem.price);
+    }
+  };
 
   const handleAddItem = () => {
     setItems([...items, { id: generateId(), name: '', quantity: 1, price: 0 }]);
@@ -115,10 +131,16 @@ export const CreateInvoiceScreen = () => {
             autoFocus
             type="text" 
             value={customerName}
-            onChange={(e) => setCustomerName(e.target.value)}
+            onChange={handleCustomerNameChange}
             placeholder="Who is this for?" 
+            list="clients-list"
             className="w-full bg-transparent border-none text-3xl md:text-4xl font-black tracking-tight text-on-surface placeholder:text-outline-variant/30 focus:ring-0 p-0 outline-none"
           />
+          <datalist id="clients-list">
+            {clients.map((client, index) => (
+              <option key={client.id || index} value={client.name} />
+            ))}
+          </datalist>
         </div>
       </section>
 
@@ -128,14 +150,21 @@ export const CreateInvoiceScreen = () => {
         </div>
 
         <div className="space-y-4">
+          <datalist id="catalog-list">
+            {catalog.map((catalogItem, index) => (
+              <option key={catalogItem.id || index} value={catalogItem.name} />
+            ))}
+          </datalist>
           {items.map((item) => (
             <div key={item.id} className="bg-surface-container-low focus-within:bg-surface-container-lowest p-5 rounded-3xl shadow-ambient group focus-within:ring-1 focus-within:ring-primary/20 transition-all">
               <input 
                 type="text" 
                 value={item.name}
-                onChange={(e) => updateItem(item.id, 'name', e.target.value)}
+                onChange={(e) => handleItemNameChange(item.id, e.target.value)}
+                onBlur={(e) => handleItemNameBlur(item.id, e.target.value)}
                 placeholder="Item or service name" 
-                className="w-full bg-transparent border-none text-base font-bold text-on-surface focus:ring-0 p-0 mb-4 outline-none placeholder:text-outline-variant/40"
+                list="catalog-list"
+                className="w-full bg-transparent border-none text-base font-bold text-on-surface focus:ring-0 p-2 mb-4 outline-none placeholder:text-outline-variant/40"
               />
               
               <div className="flex items-center justify-between gap-3">
@@ -244,7 +273,9 @@ export const CreateInvoiceScreen = () => {
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-6">
           <div>
             <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Total</p>
-            <p className="text-3xl font-mono font-black tracking-tighter text-on-surface">{formatCurrency(total, currency.symbol)}</p>
+            <p className="text-2xl sm:text-3xl font-mono font-black tracking-tighter text-on-surface break-all sm:break-words line-clamp-2" title={formatCurrency(total, currency.symbol)}>
+              {formatCurrency(total, currency.symbol)}
+            </p>
           </div>
           <button 
             onClick={handleSaveAndShare}

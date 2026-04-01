@@ -32,7 +32,7 @@ export const HomeScreen = () => {
             <AlertCircle className="text-secondary" size={16} />
             <span className="text-[10px] font-bold text-secondary uppercase tracking-widest">Amount Owed</span>
           </div>
-          <h2 className="text-4xl font-mono font-black tracking-tighter text-on-secondary-container break-all line-clamp-2">
+          <h2 className="text-3xl sm:text-4xl font-mono font-black tracking-tighter text-on-secondary-container break-all sm:break-words line-clamp-2" title={formatCurrency(totalOwed, currency.symbol)}>
             {formatCurrency(totalOwed, currency.symbol)}
           </h2>
           <p className="text-on-secondary-container/70 text-xs mt-2">{unpaidInvoices.length} active invoices</p>
@@ -91,7 +91,7 @@ export const HomeScreen = () => {
                   <p className="text-on-surface-variant text-[10px] font-mono uppercase tracking-wider">{invoice.invoiceNumber}</p>
                 </div>
                 <div className="text-right flex flex-col items-end">
-                  <span className="font-mono font-black text-on-surface text-base tracking-tight">
+                  <span className="font-mono font-black text-on-surface text-base tracking-tight truncate max-w-full" title={formatCurrency(calculateTotal(invoice.items), currency.symbol)}>
                     {formatCurrency(calculateTotal(invoice.items), currency.symbol)}
                   </span>
                   <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mt-2 ${

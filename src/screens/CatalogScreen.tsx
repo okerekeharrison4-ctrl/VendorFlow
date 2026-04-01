@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { useStore } from '../store/StoreContext';
 import { motion } from 'motion/react';
 import { Plus, Search, Edit2, Trash2, Package } from 'lucide-react';
-import { formatCurrency } from '../utils/helpers';
+import { formatCurrency, generateId } from '../utils/helpers';
 
 const container = {
   hidden: { opacity: 0 },
   show: { opacity: 1, transition: { staggerChildren: 0.05 } }
 };
 
-const item = {
+const itemVariant = {
   hidden: { opacity: 0, y: 10 },
   show: { opacity: 1, y: 0 }
 };
@@ -36,9 +36,9 @@ export const CatalogScreen = () => {
     if (!formData.name.trim() || formData.price < 0) return;
 
     if (editingId) {
-      updateCatalogItem(editingId, formData);
+      updateCatalogItem({ ...formData, id: editingId });
     } else {
-      addCatalogItem(formData);
+      addCatalogItem({ ...formData, id: generateId() });
     }
 
     setIsAdding(false);
@@ -171,10 +171,10 @@ export const CatalogScreen = () => {
                 <p>No items found in catalog.</p>
               </div>
             ) : (
-              filteredItems.map(item => (
+              filteredItems.map((item, index) => (
                 <motion.div 
-                  key={item.id} 
-                  variants={item}
+                  key={item.id || index} 
+                  variants={itemVariant}
                   className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient flex items-center justify-between"
                 >
                   <div className="flex items-center gap-4">
@@ -183,7 +183,7 @@ export const CatalogScreen = () => {
                     </div>
                     <div>
                       <h3 className="font-bold text-on-surface">{item.name}</h3>
-                      <p className="text-sm font-mono font-bold text-on-surface-variant">{formatCurrency(item.price, currency.symbol)}</p>
+                      <p className="text-sm font-mono font-bold text-on-surface-variant truncate max-w-[150px]" title={formatCurrency(item.price, currency.symbol)}>{formatCurrency(item.price, currency.symbol)}</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
