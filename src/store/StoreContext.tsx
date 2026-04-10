@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Invoice, Currency, CURRENCIES, BankDetails, Client, CatalogItem, TemplateConfig, RecurringInvoice } from '../types';
+import { Invoice, Currency, CURRENCIES, BankDetails, Client, CatalogItem, TemplateConfig, RecurringInvoice, TaxConfig } from '../types';
 import { getEncryptedData, saveEncryptedData } from '../services/storageService';
 import { generateId, generateInvoiceNumber } from '../utils/helpers';
 
@@ -11,7 +11,9 @@ type StoreContextType = {
   hasCompletedOnboarding: boolean;
   bankDetails: BankDetails | null;
   brandName: string;
+  vendorTaxId: string;
   templateConfig: TemplateConfig;
+  taxConfig: TaxConfig;
   lastSyncedAt: number | null;
   isLoading: boolean;
   theme: 'light' | 'dark';
@@ -27,7 +29,9 @@ type StoreContextType = {
   setCurrency: (currency: Currency) => void;
   setBankDetails: (details: BankDetails | null) => void;
   setBrandName: (name: string) => void;
+  setVendorTaxId: (id: string) => void;
   setTemplateConfig: (config: TemplateConfig) => void;
+  setTaxConfig: (config: TaxConfig) => void;
   toggleTheme: () => void;
   togglePalette: () => void;
   addInvoice: (invoice: Invoice) => void;
@@ -50,11 +54,13 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
-  const [templateConfig, setTemplateConfigState] = useState<TemplateConfig>({ color: '#000000', style: 'modern' });
+  const [templateConfig, setTemplateConfigState] = useState<TemplateConfig>({ color: '#2A7A3E', style: 'modern' });
+  const [taxConfig, setTaxConfigState] = useState<TaxConfig>({ enabled: false, rate: 7.5, label: 'VAT' });
   const [lastSyncedAt, setLastSyncedAt] = useState<number | null>(null);
   const [currency, setCurrencyState] = useState<Currency>(CURRENCIES[0]);
   const [bankDetails, setBankDetailsState] = useState<BankDetails | null>(null);
   const [brandName, setBrandNameState] = useState<string>('');
+  const [vendorTaxId, setVendorTaxIdState] = useState<string>('');
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState<boolean>(false);
   const [isPremium, setIsPremiumState] = useState<boolean>(false);
   const [logoUrl, setLogoUrlState] = useState<string | null>(null);
@@ -74,10 +80,12 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       const savedInvoices = await getEncryptedData('invoices') || [];
       const savedClients = await getEncryptedData('clients') || [];
       const savedCatalog = await getEncryptedData('catalog') || [];
-      const savedTemplate = await getEncryptedData('template') || { color: '#000000', style: 'modern' };
+      const savedTemplate = await getEncryptedData('template') || { color: '#2A7A3E', style: 'modern' };
+      const savedTaxConfig = await getEncryptedData('tax_config') || { enabled: false, rate: 7.5, label: 'VAT' };
       const savedCurrency = await getEncryptedData('currency') || CURRENCIES[0];
       const savedBankDetails = await getEncryptedData('bank_details') || null;
       const savedBrandName = await getEncryptedData('brand_name') || '';
+      const savedVendorTaxId = await getEncryptedData('vendor_tax_id') || '';
       const savedOnboarding = await getEncryptedData('onboarding') === 'true';
       const savedTheme = await getEncryptedData('theme') || 'light';
 
@@ -92,9 +100,11 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       setIsPremium(savedIsPremium);
       setLogoUrl(savedLogoUrl);
       setTemplateConfigState(savedTemplate);
+      setTaxConfigState(savedTaxConfig);
       setCurrencyState(savedCurrency);
       setBankDetailsState(savedBankDetails);
       setBrandNameState(savedBrandName);
+      setVendorTaxIdState(savedVendorTaxId);
       setHasCompletedOnboarding(savedOnboarding);
       setThemeState(savedTheme);
       setIsLoading(false);
@@ -190,9 +200,19 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     saveEncryptedData('brand_name', name);
   };
 
+  const setVendorTaxId = (id: string) => {
+    setVendorTaxIdState(id);
+    saveEncryptedData('vendor_tax_id', id);
+  };
+
   const setTemplateConfig = (config: TemplateConfig) => {
     setTemplateConfigState(config);
     saveEncryptedData('template', config);
+  };
+
+  const setTaxConfig = (config: TaxConfig) => {
+    setTaxConfigState(config);
+    saveEncryptedData('tax_config', config);
   };
 
   const completeOnboarding = () => {
@@ -230,7 +250,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <StoreContext.Provider value={{
-      invoices, clients, catalog, currency, hasCompletedOnboarding, bankDetails, brandName, templateConfig, lastSyncedAt, isLoading, theme, isPaletteOpen,
+      invoices, clients, catalog, currency, hasCompletedOnboarding, bankDetails, brandName, vendorTaxId, templateConfig, taxConfig, lastSyncedAt, isLoading, theme, isPaletteOpen,
       isPremium,
       logoUrl,
       recurringInvoices,
@@ -239,7 +259,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       addRecurringInvoice,
       updateRecurringInvoice,
       deleteRecurringInvoice,
-      setCurrency, setBankDetails, setBrandName, setTemplateConfig, toggleTheme, togglePalette,
+      setCurrency, setBankDetails, setBrandName, setVendorTaxId, setTemplateConfig, setTaxConfig, toggleTheme, togglePalette,
       addInvoice, updateInvoice, deleteInvoice, markAsPaid, getInvoice,
       addClient, updateClient, deleteClient,
       addCatalogItem, updateCatalogItem, deleteCatalogItem,

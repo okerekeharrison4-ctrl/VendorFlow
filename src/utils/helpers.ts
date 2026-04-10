@@ -19,6 +19,14 @@ export const calculateTotal = (items: { quantity: number; price: number }[]) => 
   return items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
 };
 
+export const calculateInvoiceTotal = (invoice: any) => {
+  const itemsSum = calculateTotal(invoice.items);
+  if (invoice.taxAmount && !invoice.taxInclusive) {
+    return itemsSum + invoice.taxAmount;
+  }
+  return itemsSum;
+};
+
 export const isColorDark = (hex: string) => {
   if (!hex || !hex.startsWith('#')) return false;
   try {

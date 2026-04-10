@@ -47,11 +47,13 @@ export const PreviewScreen = () => {
     return <div className="p-6 text-center">Invoice not found</div>;
   }
 
-  const total = calculateTotal(invoice.items);
+  const subtotal = calculateTotal(invoice.items);
+  const total = invoice.taxAmount ? subtotal + invoice.taxAmount : subtotal;
 
   const isDark = theme === 'dark';
   const templateColor = invoice.template?.color;
-  const displayColor = isDark && isColorDark(templateColor || '') ? '#ffffff' : templateColor;
+  const isCssVar = templateColor?.startsWith('var(');
+  const displayColor = isCssVar ? templateColor : (isDark && isColorDark(templateColor || '') ? '#ffffff' : templateColor);
 
   const downloadFile = (file: File) => {
     const url = URL.createObjectURL(file);
@@ -241,6 +243,7 @@ export const PreviewScreen = () => {
           ref={invoiceRef}
           layoutId={`invoice-${id}`}
           className="relative bg-white rounded-3xl shadow-ambient overflow-hidden min-w-[380px] sm:min-w-full mx-auto"
+          style={{ '--theme-hue': invoice.template?.hue || 135 } as React.CSSProperties}
         >
           <TemplateRenderer 
             invoice={invoice} 
@@ -265,7 +268,7 @@ export const PreviewScreen = () => {
                 exit={{ opacity: 0, y: 10 }}
                 className="bg-surface-container-low rounded-3xl p-4 flex items-center justify-between"
               >
-                <span className="text-sm font-medium text-on-surface">Make it look more professional</span>
+                <span className="text-sm font-medium text-on-surface">Remove watermark for 24 hours</span>
                 <button 
                   onClick={() => {
                     track('reward_clicked', { type: 'invoice', id: invoice?.id });
@@ -295,7 +298,7 @@ export const PreviewScreen = () => {
           <div className="flex gap-4">
             <button 
               onClick={handleMarkPaid}
-              className="flex-1 py-4 bg-secondary-container text-on-secondary-container rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+              className="flex-1 py-4 bg-gradient-to-r from-secondary-container to-secondary-container-heavy text-on-secondary-container rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-ambient"
             >
               <CheckCircle2 size={18} strokeWidth={2.5} />
               Mark as Paid
@@ -303,7 +306,7 @@ export const PreviewScreen = () => {
             <button 
               onClick={() => setShowShareMenu(true)}
               disabled={isSharing}
-              className="flex-1 py-4 bg-primary text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-ambient disabled:opacity-70"
+              className="flex-1 py-4 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-ambient disabled:opacity-70 hover:opacity-90"
             >
               {isSharing ? <Loader2 size={18} className="animate-spin" strokeWidth={2.5} /> : <Share2 size={18} strokeWidth={2.5} />}
               {isSharing ? 'Preparing...' : 'Share Invoice'}
@@ -354,7 +357,7 @@ export const PreviewScreen = () => {
                     </button>
                     <button 
                       onClick={() => handleShareAction('email')}
-                      className="w-full py-3.5 bg-[#006f1d] text-white rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                      className="w-full py-3.5 bg-primary text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

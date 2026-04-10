@@ -62,7 +62,7 @@ export const MockAdVideo: React.FC<MockAdVideoProps> = ({ onComplete, onClose, t
               <p className="text-on-surface-variant">You can now close this ad.</p>
               <button 
                 onClick={onClose}
-                className="mt-4 px-8 py-3 bg-primary text-on-primary rounded-full font-bold text-sm active:scale-[0.98] transition-all"
+                className="mt-4 px-8 py-3 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-sm active:scale-[0.98] transition-all hover:opacity-90 shadow-ambient"
               >
                 Continue
               </button>

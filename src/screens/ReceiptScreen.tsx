@@ -47,13 +47,15 @@ export const ReceiptScreen = () => {
     return <div className="p-6 text-center">Receipt not found</div>;
   }
 
-  const total = calculateTotal(invoice.items);
+  const subtotal = calculateTotal(invoice.items);
+  const total = invoice.taxAmount ? subtotal + invoice.taxAmount : subtotal;
 
   const isDark = theme === 'dark';
   const templateColor = invoice.template?.color;
-  const displayColor = isDark && isColorDark(templateColor || '') ? '#ffffff' : templateColor;
-  const displayColor10 = isDark && isColorDark(templateColor || '') ? '#ffffff10' : `${templateColor}10`;
-  const displayColor20 = isDark && isColorDark(templateColor || '') ? '#ffffff20' : `${templateColor}20`;
+  const isCssVar = templateColor?.startsWith('var(');
+  const displayColor = isCssVar ? templateColor : (isDark && isColorDark(templateColor || '') ? '#ffffff' : templateColor);
+  const displayColor10 = isCssVar ? `color-mix(in srgb, ${templateColor} 10%, transparent)` : (isDark && isColorDark(templateColor || '') ? '#ffffff10' : `${templateColor}10`);
+  const displayColor20 = isCssVar ? `color-mix(in srgb, ${templateColor} 20%, transparent)` : (isDark && isColorDark(templateColor || '') ? '#ffffff20' : `${templateColor}20`);
 
   const downloadFile = (file: File) => {
     const url = URL.createObjectURL(file);
@@ -227,6 +229,7 @@ export const ReceiptScreen = () => {
           ref={receiptRef}
           layoutId={`invoice-${id}`}
           className="relative w-full max-w-md mx-auto flex flex-col items-center bg-background pb-6 overflow-hidden min-w-[380px] sm:min-w-full"
+          style={{ '--theme-hue': invoice.template?.hue || 135 } as React.CSSProperties}
         >
         <div className="text-center mb-5 pt-2">
           {isPremium && logoUrl && (
@@ -252,70 +255,6 @@ export const ReceiptScreen = () => {
             isPaid={true}
             removeWatermark={removeWatermark}
           />
-
-            {/* Bento Grid for Info */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <div className="bg-surface-container-low rounded-3xl p-4">
-                <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Receipt For</p>
-                <p className="text-sm font-bold text-on-surface">{invoice.customerName}</p>
-              </div>
-              <div className="bg-surface-container-low rounded-3xl p-4">
-                <p className="text-[10px] font-bold text-outline-variant uppercase tracking-widest mb-1">Paid On</p>
-                <p className="text-sm font-bold text-on-surface">{formatDate(invoice.paidAt || Date.now())}</p>
-              </div>
-            </div>
-            
-            <div className="rounded-3xl p-5 flex flex-col items-center justify-center border w-full overflow-hidden" style={{ backgroundColor: templateColor ? displayColor10 : 'var(--color-secondary-container)', borderColor: templateColor ? displayColor20 : 'var(--color-secondary)' }}>
-              <p className="text-[10px] font-bold tracking-widest uppercase mb-1 text-center" style={{ color: templateColor ? displayColor : 'var(--color-secondary)' }}>Total Amount Paid</p>
-              <h3 className="text-2xl sm:text-3xl font-mono font-black tracking-tighter break-all sm:break-words text-center" style={{ color: templateColor ? displayColor : 'var(--color-on-secondary-container)' }} title={formatCurrency(total, currency.symbol)}>
-                {formatCurrency(total, currency.symbol)}
-              </h3>
-            </div>
-
-          {/* Ticket Perforation Divider */}
-          <div className="relative h-6 flex items-center justify-center overflow-hidden">
-            <div className="absolute left-[-16px] w-8 h-8 bg-background rounded-full "></div>
-            <div className="w-full border-t-2 border-dashed border-outline-variant/20 mx-6"></div>
-            <div className="absolute right-[-16px] w-8 h-8 bg-background rounded-full "></div>
-          </div>
-
-          {/* Items Section */}
-          <div className="p-5 pt-2">
-            <p className="text-[10px] font-bold tracking-widest text-outline-variant uppercase mb-4">Details</p>
-            <div className="space-y-3">
-              {invoice.items.map(item => (
-                <div key={item.id} className="flex justify-between items-start gap-4">
-                  <span className="font-bold text-on-surface text-sm break-words flex-1">{item.name}</span>
-                  <span className="font-mono font-bold text-on-surface text-sm whitespace-nowrap text-right mt-0.5">
-                    {formatCurrency(item.quantity * item.price, currency.symbol)}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Decorative Barcode */}
-          <div className="px-5 pb-4 flex justify-center opacity-20">
-            <div className="h-8 w-full max-w-[200px] flex gap-1 justify-center items-center">
-              {[...Array(30)].map((_, i) => (
-                <div key={i} className="h-full bg-on-surface" style={{ width: `${Math.random() * 4 + 1}px` }}></div>
-              ))}
-            </div>
-          </div>
-
-          {/* App Branding Footer */}
-          {!removeWatermark && (
-            <div className="px-5 pb-5 flex items-center justify-center gap-2 opacity-40">
-              <span className="text-[10px] font-bold uppercase tracking-widest">Generated by</span>
-              <div className="flex items-center gap-1">
-                <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <rect width="100" height="100" rx="24" fill="currentColor" />
-                  <path d="M30 34L50 68L70 34" stroke="white" strokeWidth="14" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                <span className="text-xs font-black tracking-tight">VendorFlow</span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Watermark */}
@@ -338,7 +277,7 @@ export const ReceiptScreen = () => {
               exit={{ opacity: 0, y: 10 }}
               className="bg-surface-container-low rounded-3xl p-4 flex items-center justify-between"
             >
-              <span className="text-sm font-medium text-on-surface">Send a clean receipt to your customer</span>
+              <span className="text-sm font-medium text-on-surface">Remove watermark for 24 hours</span>
               <button 
                 onClick={() => {
                   track('reward_clicked', { type: 'receipt', id: invoice?.id });
@@ -368,7 +307,7 @@ export const ReceiptScreen = () => {
         <button 
           onClick={() => setShowShareMenu(true)}
           disabled={isSharing}
-          className="w-full py-4 bg-primary text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 shadow-ambient active:scale-[0.98] transition-all disabled:opacity-70"
+          className="w-full py-4 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 shadow-ambient active:scale-[0.98] transition-all disabled:opacity-70 hover:opacity-90"
         >
           {isSharing ? <Loader2 size={18} className="animate-spin" strokeWidth={2.5} /> : <Share2 size={18} strokeWidth={2.5} />}
           {isSharing ? 'Preparing...' : 'Share Receipt'}
@@ -424,7 +363,7 @@ export const ReceiptScreen = () => {
                     </button>
                     <button 
                       onClick={() => handleShareAction('email')}
-                      className="w-full py-3.5 bg-[#006f1d] text-white rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                      className="w-full py-3.5 bg-primary text-on-primary rounded-full font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
                     >
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />

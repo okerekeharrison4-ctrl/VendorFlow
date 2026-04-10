@@ -31,7 +31,7 @@ export const LandingScreen = ({ onStart }: LandingScreenProps) => {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onStart}
-          className="w-full py-5 bg-primary text-on-primary rounded-full font-bold text-xl tracking-wide shadow-ambient shadow-primary/25 transition-all hover:bg-primary/90"
+          className="w-full py-5 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-xl tracking-wide shadow-ambient shadow-primary/25 transition-all hover:opacity-90"
         >
           Get Started
         </motion.button>

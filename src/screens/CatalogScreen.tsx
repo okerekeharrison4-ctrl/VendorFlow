@@ -3,6 +3,9 @@ import { useStore } from '../store/StoreContext';
 import { motion } from 'motion/react';
 import { Plus, Search, Edit2, Trash2, Package } from 'lucide-react';
 import { formatCurrency, generateId } from '../utils/helpers';
+import { MockNativeAd } from '../components/MockNativeAd';
+import { SwipeableItem } from '../components/SwipeableItem';
+import { useGestureGuide } from '../hooks/useGestureGuide';
 
 const container = {
   hidden: { opacity: 0 },
@@ -19,6 +22,7 @@ export const CatalogScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const showGuide = useGestureGuide('catalog_swipe');
   
   const [formData, setFormData] = useState({
     name: '',
@@ -80,7 +84,7 @@ export const CatalogScreen = () => {
             setEditingId(null);
             setFormData({ name: '', description: '', price: 0 });
           }}
-          className="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-ambient active:scale-95 transition-transform"
+          className="w-12 h-12 bg-gradient-to-br from-primary to-primary-heavy text-on-primary rounded-full flex items-center justify-center shadow-ambient active:scale-95 transition-transform"
         >
           <Plus size={24} />
         </button>
@@ -90,7 +94,7 @@ export const CatalogScreen = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-surface-container-lowest rounded-3xl p-6 shadow-ambient mb-8"
+          className="bg-gradient-to-b from-surface-container-lowest to-surface-container-low rounded-3xl p-6 shadow-ambient mb-8 border border-surface-variant/50"
         >
           <h3 className="text-lg font-bold mb-4">{editingId ? 'Edit Item' : 'New Item'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -140,7 +144,7 @@ export const CatalogScreen = () => {
               </button>
               <button 
                 type="submit"
-                className="flex-1 py-4 text-on-primary font-bold text-sm bg-primary hover:bg-primary/90 rounded-full transition-colors"
+                className="flex-1 py-4 text-on-primary font-bold text-sm bg-gradient-to-r from-primary to-primary-heavy hover:opacity-90 rounded-full transition-opacity shadow-ambient"
               >
                 Save
               </button>
@@ -171,31 +175,49 @@ export const CatalogScreen = () => {
                 <p>No items found in catalog.</p>
               </div>
             ) : (
-              filteredItems.map((item, index) => (
-                <motion.div 
-                  key={item.id || index} 
-                  variants={itemVariant}
-                  className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient flex items-center justify-between"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-surface-container-low flex items-center justify-center text-primary">
-                      <Package size={20} />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-on-surface">{item.name}</h3>
-                      <p className="text-sm font-mono font-bold text-on-surface-variant truncate max-w-[150px]" title={formatCurrency(item.price, currency.symbol)}>{formatCurrency(item.price, currency.symbol)}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={() => handleEdit(item)} className="p-4 text-on-surface-variant hover:text-primary transition-colors">
-                      <Edit2 size={20} />
-                    </button>
-                    <button onClick={() => handleDelete(item.id)} className="p-4 text-on-surface-variant hover:text-error transition-colors">
-                      <Trash2 size={20} />
-                    </button>
-                  </div>
-                </motion.div>
-              ))
+              <>
+                {filteredItems.map((item, index) => (
+                  <React.Fragment key={item.id || index}>
+                    <motion.div variants={itemVariant}>
+                      <SwipeableItem
+                        onSwipeLeft={() => handleDelete(item.id)}
+                        onSwipeRight={() => handleEdit(item)}
+                        rightContent={<><Trash2 size={20} /> Delete</>}
+                        leftContent={<><Edit2 size={20} /> Edit</>}
+                        rightBgColor="bg-error"
+                        leftBgColor="bg-primary"
+                        showGuide={index === 0 && showGuide}
+                      >
+                        <div className="p-5 flex items-center justify-between bg-surface-container-lowest border border-transparent hover:border-surface-variant/50 transition-colors rounded-3xl">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-surface-container-low to-surface-variant flex items-center justify-center text-primary shadow-inner">
+                              <Package size={20} />
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-on-surface group-hover:text-primary transition-colors">{item.name}</h3>
+                              <p className="text-sm font-mono font-bold text-on-surface-variant truncate max-w-[150px]" title={formatCurrency(item.price, currency.symbol)}>{formatCurrency(item.price, currency.symbol)}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </SwipeableItem>
+                    </motion.div>
+                    
+                    {/* Insert Native Ad after the 2nd item, or at the end if fewer than 2 items */}
+                    {index === 1 && (
+                      <motion.div variants={itemVariant}>
+                        <MockNativeAd />
+                      </motion.div>
+                    )}
+                  </React.Fragment>
+                ))}
+                
+                {/* If there are less than 2 items, still show the ad at the bottom */}
+                {filteredItems.length < 2 && (
+                  <motion.div variants={itemVariant}>
+                    <MockNativeAd />
+                  </motion.div>
+                )}
+              </>
             )}
           </motion.div>
         </>

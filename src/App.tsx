@@ -18,11 +18,14 @@ import { AnimatePresence, motion } from 'motion/react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAdSystem } from './hooks/useAdSystem';
 import { MockAdVideo } from './components/MockAdVideo';
+import { SubscriptionModal } from './components/SubscriptionModal';
 
 const AppContent = () => {
-  const { hasCompletedOnboarding, isLoading, theme, isPaletteOpen, togglePalette } = useStore();
+  const { hasCompletedOnboarding, isLoading, theme, isPaletteOpen, togglePalette, isPremium } = useStore();
   const { checkAndShowInterstitial } = useAdSystem();
   
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -49,11 +52,19 @@ const AppContent = () => {
     locationRef.current = location.pathname;
   }, [location.pathname]);
 
+  // Listen for custom event to open subscription modal
+  useEffect(() => {
+    const handleOpenSubscription = () => setShowSubscriptionModal(true);
+    window.addEventListener('open_subscription_modal', handleOpenSubscription);
+    return () => window.removeEventListener('open_subscription_modal', handleOpenSubscription);
+  }, []);
+
   useEffect(() => {
     if (isLoading) return;
 
     if (hasCompletedOnboarding) {
       const lastOpened = localStorage.getItem('vendorflow_last_opened');
+      const hasSeenSubscription = localStorage.getItem('vendorflow_has_seen_subscription');
       const now = Date.now();
       const ONE_HOUR = 60 * 60 * 1000;
       
@@ -63,11 +74,19 @@ const AppContent = () => {
         localStorage.setItem('vendorflow_last_opened', now.toString());
       }
 
+      // Show subscription modal on first login if not premium
+      if (!hasSeenSubscription && !isPremium && !showWelcome) {
+        setTimeout(() => {
+          setShowSubscriptionModal(true);
+          localStorage.setItem('vendorflow_has_seen_subscription', 'true');
+        }, 2000);
+      }
+
       const tryShowInterstitial = () => {
         const currentPath = locationRef.current;
         const isSafeScreen = currentPath === '/' || currentPath === '/debts' || currentPath === '/settings' || currentPath === '/clients' || currentPath === '/catalog' || currentPath === '/analytics';
         
-        if (isSafeScreen && checkAndShowInterstitial()) {
+        if (isSafeScreen && checkAndShowInterstitial() && !showSubscriptionModal) {
           setShowInterstitial(true);
         }
       };
@@ -87,7 +106,7 @@ const AppContent = () => {
         window.removeEventListener('vendorflow_foreground', handleForeground);
       };
     }
-  }, [isLoading, hasCompletedOnboarding, checkAndShowInterstitial]);
+  }, [isLoading, hasCompletedOnboarding, checkAndShowInterstitial, isPremium, showWelcome, showSubscriptionModal]);
 
   useEffect(() => {
     if (theme === 'dark') {
@@ -174,6 +193,11 @@ const AppContent = () => {
             onComplete={() => {}} 
           />
         )}
+
+        <SubscriptionModal 
+          isOpen={showSubscriptionModal} 
+          onClose={() => setShowSubscriptionModal(false)} 
+        />
       </div>
     </div>
   );

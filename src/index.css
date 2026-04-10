@@ -2,44 +2,68 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #f9f9f9;
-  --color-surface: #f9f9f9;
-  --color-surface-container-low: #f2f4f4;
-  --color-surface-container-lowest: #ffffff;
-  --color-surface-container-highest: #e8eae9;
-  --color-surface-variant: #eaeced;
-  --color-primary: #141414;
-  --color-on-primary: #ffffff;
-  --color-secondary: #006f1d;
-  --color-secondary-container: #94f990;
-  --color-on-secondary-container: #006017;
-  --color-on-surface: #2d3435;
-  --color-on-surface-variant: #5a6061;
-  --color-outline-variant: #adb3b4;
-  --color-error: #9e422c;
-  --color-error-container: #fe8b70;
+  /* Line & Leaf Light Theme */
+  --color-background: hsl(var(--theme-hue, 135), 10%, 98%);
+  --color-surface: hsl(var(--theme-hue, 135), 10%, 98%);
+  --color-surface-container-low: hsl(var(--theme-hue, 135), 10%, 95%);
+  --color-surface-container-lowest: #FFFFFF;
+  --color-surface-container-highest: hsl(var(--theme-hue, 135), 10%, 90%);
+  --color-surface-variant: hsl(var(--theme-hue, 135), 10%, 89%);
+  
+  /* Leaf */
+  --color-primary: hsl(var(--theme-hue, 135), 49%, 32%);
+  --color-primary-heavy: hsl(calc(var(--theme-hue, 135) - 10), 55%, 24%);
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: hsl(calc(var(--theme-hue, 135) - 13), 43%, 75%);
+  --color-primary-container-heavy: hsl(calc(var(--theme-hue, 135) - 12), 42%, 64%);
+  --color-on-primary-container: hsl(calc(var(--theme-hue, 135) - 13), 100%, 10%);
+  
+  /* Line */
+  --color-secondary: hsl(calc(var(--theme-hue, 135) + 25), 5%, 12%);
+  --color-secondary-container: hsl(calc(var(--theme-hue, 135) - 5), 28%, 87%);
+  --color-secondary-container-heavy: hsl(calc(var(--theme-hue, 135) - 13), 43%, 75%);
+  --color-on-secondary-container: hsl(calc(var(--theme-hue, 135) - 5), 47%, 11%);
+  
+  --color-on-surface: hsl(calc(var(--theme-hue, 135) + 25), 5%, 12%);
+  --color-on-surface-variant: hsl(calc(var(--theme-hue, 135) + 5), 6%, 34%);
+  --color-outline-variant: hsl(calc(var(--theme-hue, 135) - 5), 7%, 65%);
+  
+  --color-error: #BA1A1A;
+  --color-error-container: #FFDAD6;
   
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
 :root.dark, body.dark {
-  --color-background: #121212;
-  --color-surface: #121212;
-  --color-surface-container-low: #1e1e1e;
-  --color-surface-container-lowest: #1a1a1a;
-  --color-surface-container-highest: #2a2a2a;
-  --color-surface-variant: #242424;
-  --color-primary: #e5e5e5;
-  --color-on-primary: #121212;
-  --color-secondary: #94f990;
-  --color-secondary-container: #004010;
-  --color-on-secondary-container: #94f990;
-  --color-on-surface: #f5f5f5;
-  --color-on-surface-variant: #a3a3a3;
-  --color-outline-variant: #404040;
-  --color-error: #ffb4a2;
-  --color-error-container: #93000a;
+  /* Line & Leaf Dark Theme */
+  --color-background: hsl(var(--theme-hue, 135), 5%, 7%);
+  --color-surface: hsl(var(--theme-hue, 135), 5%, 7%);
+  --color-surface-container-low: hsl(var(--theme-hue, 135), 5%, 10%);
+  --color-surface-container-lowest: hsl(var(--theme-hue, 135), 5%, 9%);
+  --color-surface-container-highest: hsl(var(--theme-hue, 135), 5%, 15%);
+  --color-surface-variant: hsl(var(--theme-hue, 135), 5%, 13%);
+  
+  /* Leaf */
+  --color-primary: hsl(calc(var(--theme-hue, 135) - 12), 42%, 64%);
+  --color-primary-heavy: hsl(calc(var(--theme-hue, 135) - 12), 43%, 75%);
+  --color-on-primary: hsl(calc(var(--theme-hue, 135) - 13), 100%, 10%);
+  --color-primary-container: hsl(calc(var(--theme-hue, 135) - 13), 100%, 16%);
+  --color-primary-container-heavy: hsl(calc(var(--theme-hue, 135) - 10), 55%, 24%);
+  --color-on-primary-container: hsl(calc(var(--theme-hue, 135) - 5), 28%, 87%);
+  
+  /* Line */
+  --color-secondary: hsl(var(--theme-hue, 135), 5%, 89%);
+  --color-secondary-container: hsl(calc(var(--theme-hue, 135) - 5), 37%, 17%);
+  --color-secondary-container-heavy: hsl(var(--theme-hue, 135), 49%, 32%);
+  --color-on-secondary-container: hsl(calc(var(--theme-hue, 135) - 13), 43%, 75%);
+  
+  --color-on-surface: hsl(var(--theme-hue, 135), 5%, 89%);
+  --color-on-surface-variant: hsl(calc(var(--theme-hue, 135) - 5), 7%, 65%);
+  --color-outline-variant: hsl(calc(var(--theme-hue, 135) - 5), 5%, 27%);
+  
+  --color-error: #FFB4AB;
+  --color-error-container: #93000A;
 }
 
 body {
@@ -67,6 +91,29 @@ body {
 }
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Custom Range Slider */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--color-surface-variant);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input[type=range]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid var(--color-surface-variant);
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 /* Custom shadow for the Effortless Curated Flow */

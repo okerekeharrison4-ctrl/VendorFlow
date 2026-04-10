@@ -76,7 +76,7 @@ export const CommandPalette = ({ isOpen, onClose }: { isOpen: boolean; onClose: 
                   <button
                     key={cmd.id}
                     onClick={() => { cmd.action(); onClose(); }}
-                    className="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-surface-container-low transition-colors text-on-surface text-sm font-medium"
+                    className="w-full flex items-center gap-3 p-3 rounded-2xl hover:bg-gradient-to-r hover:from-surface-container-low hover:to-surface-container-lowest transition-colors text-on-surface text-sm font-medium"
                   >
                     {cmd.icon}
                     {cmd.label}

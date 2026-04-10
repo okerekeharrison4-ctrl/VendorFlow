@@ -193,7 +193,7 @@ export const OnboardingScreen = () => {
 
         <button 
           onClick={handleNext}
-          className="w-full max-w-sm py-4 bg-primary text-on-primary rounded-full font-bold text-lg tracking-wide shadow-ambient shadow-primary/20 active:scale-[0.98] transition-all hover:bg-primary/90"
+          className="w-full max-w-sm py-4 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-lg tracking-wide shadow-ambient shadow-primary/20 active:scale-[0.98] transition-all hover:opacity-90"
         >
           {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
         </button>

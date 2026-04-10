@@ -7,6 +7,7 @@ interface AdState {
   interstitialDate: string;
   rewardedInvoices: string[];
   rewardedReceipts: string[];
+  watermarkFreeUntil: number;
   sessionCount: number;
 }
 
@@ -18,6 +19,7 @@ const getInitialAdState = (): AdState => {
       return {
         ...parsed,
         sessionCount: parsed.sessionCount || 1,
+        watermarkFreeUntil: parsed.watermarkFreeUntil || 0,
       };
     } catch (e) {}
   }
@@ -27,6 +29,7 @@ const getInitialAdState = (): AdState => {
     interstitialDate: new Date().toDateString(),
     rewardedInvoices: [],
     rewardedReceipts: [],
+    watermarkFreeUntil: 0,
     sessionCount: 1,
   };
 };
@@ -90,12 +93,12 @@ export const useAdSystem = () => {
     }
     
     const timeSinceLastOpen = now - adState.lastOpenTime;
-    const fourHours = 4 * 60 * 60 * 1000;
+    const twoHours = 2 * 60 * 60 * 1000;
     
     const isFirstOpenToday = adState.interstitialDate !== today || adState.lastOpenTime === 0;
-    const isReturnAfter4Hours = timeSinceLastOpen > fourHours;
+    const isReturnAfter2Hours = timeSinceLastOpen > twoHours;
 
-    if ((isFirstOpenToday || isReturnAfter4Hours) && currentCount < 2) {
+    if ((isFirstOpenToday || isReturnAfter2Hours) && currentCount < 4) {
       setAdState(prev => ({
         ...prev,
         lastOpenTime: now,
@@ -137,6 +140,7 @@ export const useAdSystem = () => {
   const markRewarded = useCallback((type: 'invoice' | 'receipt', id: string) => {
     setAdState(prev => ({
       ...prev,
+      watermarkFreeUntil: Date.now() + 24 * 60 * 60 * 1000,
       ...(type === 'invoice' 
         ? { rewardedInvoices: [...prev.rewardedInvoices, id] }
         : { rewardedReceipts: [...prev.rewardedReceipts, id] }
@@ -147,6 +151,7 @@ export const useAdSystem = () => {
   }, []);
 
   const hasRewarded = useCallback((type: 'invoice' | 'receipt', id: string) => {
+    if (Date.now() < adState.watermarkFreeUntil) return true;
     return type === 'invoice' 
       ? adState.rewardedInvoices.includes(id)
       : adState.rewardedReceipts.includes(id);

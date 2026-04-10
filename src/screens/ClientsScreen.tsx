@@ -3,6 +3,9 @@ import { useStore } from '../store/StoreContext';
 import { motion } from 'motion/react';
 import { Plus, Search, Edit2, Trash2, Mail, Phone } from 'lucide-react';
 import { generateId } from '../utils/helpers';
+import { SwipeableItem } from '../components/SwipeableItem';
+import { useGestureGuide } from '../hooks/useGestureGuide';
+import { MockNativeAd } from '../components/MockNativeAd';
 
 const container = {
   hidden: { opacity: 0 },
@@ -19,12 +22,14 @@ export const ClientsScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const showGuide = useGestureGuide('clients_swipe');
   
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
-    address: ''
+    address: '',
+    taxId: ''
   });
 
   const filteredClients = clients.filter(c => 
@@ -45,7 +50,7 @@ export const ClientsScreen = () => {
 
     setIsAdding(false);
     setEditingId(null);
-    setFormData({ name: '', email: '', phone: '', address: '' });
+    setFormData({ name: '', email: '', phone: '', address: '', taxId: '' });
   };
 
   const handleEdit = (client: any) => {
@@ -53,7 +58,8 @@ export const ClientsScreen = () => {
       name: client.name,
       email: client.email || '',
       phone: client.phone || '',
-      address: client.address || ''
+      address: client.address || '',
+      taxId: client.taxId || ''
     });
     setEditingId(client.id);
     setIsAdding(true);
@@ -81,9 +87,9 @@ export const ClientsScreen = () => {
           onClick={() => {
             setIsAdding(true);
             setEditingId(null);
-            setFormData({ name: '', email: '', phone: '', address: '' });
+            setFormData({ name: '', email: '', phone: '', address: '', taxId: '' });
           }}
-          className="w-12 h-12 bg-primary text-on-primary rounded-full flex items-center justify-center shadow-ambient active:scale-95 transition-transform"
+          className="w-12 h-12 bg-gradient-to-br from-primary to-primary-heavy text-on-primary rounded-full flex items-center justify-center shadow-ambient active:scale-95 transition-transform"
         >
           <Plus size={24} />
         </button>
@@ -93,7 +99,7 @@ export const ClientsScreen = () => {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-surface-container-lowest rounded-3xl p-6 shadow-ambient mb-8"
+          className="bg-gradient-to-b from-surface-container-lowest to-surface-container-low rounded-3xl p-6 shadow-ambient mb-8 border border-surface-variant/50"
         >
           <h3 className="text-lg font-bold mb-4">{editingId ? 'Edit Client' : 'New Client'}</h3>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -137,6 +143,16 @@ export const ClientsScreen = () => {
                 placeholder="Client Address"
               />
             </div>
+            <div>
+              <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Tax ID (Optional)</label>
+              <input 
+                type="text" 
+                value={formData.taxId}
+                onChange={e => setFormData({ ...formData, taxId: e.target.value })}
+                className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-3xl px-5 py-4 text-on-surface font-medium focus:ring-1 focus:ring-primary/20 outline-none transition-all"
+                placeholder="e.g. TIN, VAT No."
+              />
+            </div>
             <div className="flex gap-3 pt-2">
               <button 
                 type="button"
@@ -147,7 +163,7 @@ export const ClientsScreen = () => {
               </button>
               <button 
                 type="submit"
-                className="flex-1 py-4 text-on-primary font-bold text-sm bg-primary hover:bg-primary/90 rounded-full transition-colors"
+                className="flex-1 py-4 text-on-primary font-bold text-sm bg-gradient-to-r from-primary to-primary-heavy hover:opacity-90 rounded-full transition-opacity shadow-ambient"
               >
                 Save
               </button>
@@ -178,40 +194,54 @@ export const ClientsScreen = () => {
                 <p>No clients found.</p>
               </div>
             ) : (
-              filteredClients.map((client, index) => (
-                <motion.div 
-                  key={client.id || index} 
-                  variants={itemVariant}
-                  className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-on-surface">{client.name}</h3>
-                    <div className="flex gap-2">
-                      <button onClick={() => handleEdit(client)} className="p-4 text-on-surface-variant hover:text-primary transition-colors">
-                        <Edit2 size={20} />
-                      </button>
-                      <button onClick={() => handleDelete(client.id)} className="p-4 text-on-surface-variant hover:text-error transition-colors">
-                        <Trash2 size={20} />
-                      </button>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-1">
-                    {client.email && (
-                      <div className="flex items-center gap-2 text-sm text-on-surface-variant">
-                        <Mail size={14} />
-                        <span>{client.email}</span>
-                      </div>
+              <>
+                {filteredClients.map((client, index) => (
+                  <React.Fragment key={client.id || index}>
+                    <motion.div variants={itemVariant}>
+                      <SwipeableItem
+                        onSwipeLeft={() => handleDelete(client.id)}
+                        onSwipeRight={() => handleEdit(client)}
+                        rightContent={<><Trash2 size={20} /> Delete</>}
+                        leftContent={<><Edit2 size={20} /> Edit</>}
+                        rightBgColor="bg-error"
+                        leftBgColor="bg-primary"
+                        showGuide={index === 0 && showGuide}
+                      >
+                        <div className="p-5 bg-surface-container-lowest border border-transparent hover:border-surface-variant/50 transition-colors rounded-3xl">
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-bold text-on-surface">{client.name}</h3>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            {client.email && (
+                              <div className="flex items-center gap-2 text-sm text-on-surface-variant">
+                                <Mail size={14} />
+                                <span>{client.email}</span>
+                              </div>
+                            )}
+                            {client.phone && (
+                              <div className="flex items-center gap-2 text-sm text-on-surface-variant">
+                                <Phone size={14} />
+                                <span className="font-mono">{client.phone}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </SwipeableItem>
+                    </motion.div>
+                    {index === 1 && (
+                      <motion.div variants={itemVariant}>
+                        <MockNativeAd />
+                      </motion.div>
                     )}
-                    {client.phone && (
-                      <div className="flex items-center gap-2 text-sm text-on-surface-variant">
-                        <Phone size={14} />
-                        <span className="font-mono">{client.phone}</span>
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-              ))
+                  </React.Fragment>
+                ))}
+                {filteredClients.length < 2 && (
+                  <motion.div variants={itemVariant}>
+                    <MockNativeAd />
+                  </motion.div>
+                )}
+              </>
             )}
           </motion.div>
         </>

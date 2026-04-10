@@ -10,6 +10,7 @@ export const CURRENCIES: Currency[] = [
   { code: 'KES', symbol: 'KSh', name: 'Kenyan Shilling' },
   { code: 'GHS', symbol: 'GH₵', name: 'Ghanaian Cedi' },
   { code: 'ZAR', symbol: 'R', name: 'South African Rand' },
+  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real' },
   { code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'CNY', symbol: '¥', name: 'Chinese Yuan' },
   { code: 'IDR', symbol: 'Rp', name: 'Indonesian Rupiah' },
@@ -43,6 +44,7 @@ export type Client = {
   email?: string;
   phone?: string;
   address?: string;
+  taxId?: string;
   createdAt: number;
 };
 
@@ -66,7 +68,15 @@ export type RecurringInvoice = {
 
 export type TemplateConfig = {
   color: string;
+  hue?: number;
   style: 'modern' | 'classic' | 'minimal' | 'bold' | 'elegant' | 'corporate';
+};
+
+export type TaxConfig = {
+  enabled: boolean;
+  rate: number;
+  label: string;
+  inclusive?: boolean;
 };
 
 export type Invoice = {
@@ -82,4 +92,11 @@ export type Invoice = {
   bankDetails?: BankDetails;
   brandName?: string;
   template?: TemplateConfig;
+  subtotal?: number;
+  taxAmount?: number;
+  taxRate?: number;
+  taxLabel?: string;
+  taxInclusive?: boolean;
+  vendorTaxId?: string;
+  clientTaxId?: string;
 };

@@ -7,7 +7,7 @@ import { motion } from 'motion/react';
 import { Plus, Minus, Trash2, Send, ChevronDown, ChevronUp } from 'lucide-react';
 
 export const CreateInvoiceScreen = () => {
-  const { addInvoice, currency, bankDetails, setBankDetails, brandName, setBrandName, templateConfig, clients, catalog } = useStore();
+  const { addInvoice, currency, bankDetails, setBankDetails, brandName, setBrandName, vendorTaxId, templateConfig, taxConfig, clients, catalog } = useStore();
   const navigate = useNavigate();
 
   const [customerName, setCustomerName] = useState('');
@@ -31,7 +31,21 @@ export const CreateInvoiceScreen = () => {
     }
   }, [bankDetails]);
 
-  const total = calculateTotal(items);
+  const itemsSum = calculateTotal(items);
+  let subtotal = itemsSum;
+  let taxAmount = 0;
+
+  if (taxConfig.enabled && taxConfig.rate > 0) {
+    if (taxConfig.inclusive) {
+      taxAmount = itemsSum - (itemsSum / (1 + (taxConfig.rate / 100)));
+      subtotal = itemsSum - taxAmount;
+    } else {
+      taxAmount = itemsSum * (taxConfig.rate / 100);
+      subtotal = itemsSum;
+    }
+  }
+
+  const total = taxConfig.inclusive ? itemsSum : subtotal + taxAmount;
   const isValid = customerName.trim() !== '' && items.some(i => i.name.trim() !== '' && i.price > 0);
 
   const handleCustomerNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,6 +101,8 @@ export const CreateInvoiceScreen = () => {
       setBankDetails(currentBankDetails);
     }
     
+    const client = clients.find(c => c.name === customerName.trim());
+    
     const newInvoice: Invoice = {
       id: generateId(),
       invoiceNumber: generateInvoiceNumber(),
@@ -97,7 +113,14 @@ export const CreateInvoiceScreen = () => {
       updatedAt: Date.now(),
       bankDetails: currentBankDetails,
       brandName: localBrandName.trim() || undefined,
-      template: templateConfig
+      template: templateConfig,
+      subtotal: subtotal,
+      taxAmount: taxAmount > 0 ? taxAmount : undefined,
+      taxRate: taxConfig.rate,
+      taxLabel: taxConfig.label,
+      taxInclusive: taxConfig.inclusive,
+      vendorTaxId: vendorTaxId || undefined,
+      clientTaxId: client?.taxId || undefined
     };
 
     addInvoice(newInvoice);
@@ -210,7 +233,7 @@ export const CreateInvoiceScreen = () => {
 
         <button 
           onClick={handleAddItem}
-          className="w-full py-4 bg-surface-container-low rounded-3xl text-on-surface-variant font-bold text-sm flex items-center justify-center gap-2 hover:bg-surface-container-lowest hover:shadow-ambient transition-all active:scale-[0.98]"
+          className="w-full py-4 bg-gradient-to-b from-surface-container-lowest to-surface-container-low border border-surface-variant/50 rounded-3xl text-on-surface-variant font-bold text-sm flex items-center justify-center gap-2 hover:shadow-ambient transition-all active:scale-[0.98]"
         >
           <Plus size={18} strokeWidth={2.5} />
           Add Another Item
@@ -269,10 +292,32 @@ export const CreateInvoiceScreen = () => {
         )}
       </section>
 
-      <div className="fixed bottom-0 left-0 w-full bg-surface-container-lowest p-6 pb-safe shadow-ambient z-50">
+      <div className="fixed bottom-0 left-0 w-full bg-surface-container-lowest p-6 pb-safe shadow-ambient z-50 border-t border-surface-variant/30">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-6">
-          <div>
-            <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Total</p>
+          <div className="flex-1 min-w-0">
+            {taxConfig.enabled ? (
+              <div className="flex flex-col gap-0.5 mb-1">
+                {taxConfig.inclusive ? (
+                  <div className="flex justify-between text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
+                    <span>Includes {taxConfig.label} ({taxConfig.rate}%)</span>
+                    <span className="font-mono">{formatCurrency(taxAmount, currency.symbol)}</span>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex justify-between text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
+                      <span>Subtotal</span>
+                      <span className="font-mono">{formatCurrency(subtotal, currency.symbol)}</span>
+                    </div>
+                    <div className="flex justify-between text-[10px] font-bold text-on-surface-variant uppercase tracking-widest">
+                      <span>{taxConfig.label} ({taxConfig.rate}%)</span>
+                      <span className="font-mono">{formatCurrency(taxAmount, currency.symbol)}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <p className="text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-1">Total</p>
+            )}
             <p className="text-2xl sm:text-3xl font-mono font-black tracking-tighter text-on-surface break-all sm:break-words line-clamp-2" title={formatCurrency(total, currency.symbol)}>
               {formatCurrency(total, currency.symbol)}
             </p>
@@ -281,7 +326,7 @@ export const CreateInvoiceScreen = () => {
             onClick={handleSaveAndShare}
             disabled={!isValid}
             className={`flex-1 py-4 rounded-full font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
-              isValid ? 'bg-primary text-on-primary shadow-ambient shadow-primary/20' : 'bg-surface-container-low text-outline-variant cursor-not-allowed'
+              isValid ? 'bg-gradient-to-r from-primary to-primary-heavy text-on-primary shadow-ambient shadow-primary/20 hover:opacity-90' : 'bg-surface-container-low text-outline-variant cursor-not-allowed'
             }`}
           >
             Save & Share

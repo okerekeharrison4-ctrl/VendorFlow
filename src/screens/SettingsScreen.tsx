@@ -2,25 +2,32 @@ import React, { useState } from 'react';
 import { useStore } from '../store/StoreContext';
 import { CURRENCIES, TemplateConfig } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, Save, Palette, LayoutTemplate, Download, Upload, ChevronRight, X } from 'lucide-react';
+import { Check, Save, Palette, LayoutTemplate, Download, Upload, ChevronRight, X, Smartphone } from 'lucide-react';
+import { usePWAInstall } from '../hooks/usePWAInstall';
 
 export const SettingsScreen = () => {
-  const { currency, setCurrency, bankDetails, setBankDetails, brandName, setBrandName, templateConfig, setTemplateConfig, invoices, clients, catalog, theme, toggleTheme, isPremium, setIsPremium, logoUrl, setLogoUrl } = useStore();
+  const { currency, setCurrency, bankDetails, setBankDetails, brandName, setBrandName, vendorTaxId, setVendorTaxId, templateConfig, setTemplateConfig, taxConfig, setTaxConfig, invoices, clients, catalog, theme, toggleTheme, isPremium, setIsPremium, logoUrl, setLogoUrl } = useStore();
+  const { isInstallable, isInstalled, promptInstall } = usePWAInstall();
 
   const [localBrandName, setLocalBrandName] = useState(brandName);
+  const [localVendorTaxId, setLocalVendorTaxId] = useState(vendorTaxId);
   const [bankName, setBankName] = useState(bankDetails?.bankName || '');
   const [accountName, setAccountName] = useState(bankDetails?.accountName || '');
   const [accountNumber, setAccountNumber] = useState(bankDetails?.accountNumber || '');
-  const [localTemplateConfig, setLocalTemplateConfig] = useState<TemplateConfig>(templateConfig || { color: '#141414', style: 'modern' });
+  const [localTemplateConfig, setLocalTemplateConfig] = useState<TemplateConfig>(templateConfig || { color: 'var(--color-primary)', style: 'modern' });
+  const [localTaxConfig, setLocalTaxConfig] = useState(taxConfig || { enabled: false, rate: 7.5, label: 'VAT' });
   const [isSaved, setIsSaved] = useState(false);
   const [activeModal, setActiveModal] = useState<'business' | 'template' | 'payment' | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
-  const colors = ['#141414', '#2563eb', '#16a34a', '#dc2626', '#9333ea', '#ea580c'];
+  const colors = ['var(--color-primary)', 'var(--color-secondary)'];
   const styles: Array<'modern' | 'classic' | 'minimal' | 'bold' | 'elegant' | 'corporate'> = ['modern', 'classic', 'minimal', 'bold', 'elegant', 'corporate'];
 
   const handleSaveDetails = () => {
     setBrandName(localBrandName.trim());
+    setVendorTaxId(localVendorTaxId.trim());
     setTemplateConfig(localTemplateConfig);
+    setTaxConfig(localTaxConfig);
     
     if (bankName.trim() || accountName.trim() || accountNumber.trim()) {
       setBankDetails({ 
@@ -100,13 +107,27 @@ export const SettingsScreen = () => {
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">Premium</h3>
         <div className="bg-surface-container-lowest rounded-3xl shadow-ambient p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <p className="font-bold text-on-surface text-sm">Premium Mode</p>
-            <button 
-              onClick={() => setIsPremium(!isPremium)}
-              className={`w-12 h-6 rounded-full transition-colors ${isPremium ? 'bg-primary' : 'bg-surface-container-low'}`}
-            >
-              <div className={`w-4 h-4 rounded-full bg-white transition-transform ${isPremium ? 'translate-x-7' : 'translate-x-1'}`} />
-            </button>
+            <div>
+              <p className="font-bold text-on-surface text-sm">Premium Mode</p>
+              <p className="text-[10px] text-on-surface-variant mt-1 font-medium">
+                {isPremium ? 'You are currently on a premium plan.' : 'Unlock professional tools and remove watermarks.'}
+              </p>
+            </div>
+            {!isPremium ? (
+              <button 
+                onClick={() => window.dispatchEvent(new Event('open_subscription_modal'))}
+                className="px-4 py-2 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-xs shadow-ambient active:scale-95 transition-transform hover:opacity-90"
+              >
+                Upgrade
+              </button>
+            ) : (
+              <button 
+                onClick={() => setShowCancelModal(true)}
+                className={`w-12 h-6 rounded-full transition-colors shrink-0 ${isPremium ? 'bg-primary' : 'bg-surface-container-low'}`}
+              >
+                <div className={`w-4 h-4 rounded-full bg-white transition-transform ${isPremium ? 'translate-x-7' : 'translate-x-1'}`} />
+              </button>
+            )}
           </div>
           {isPremium && (
             <div className="space-y-2">
@@ -145,16 +166,59 @@ export const SettingsScreen = () => {
       </section>
 
       <section className="mb-10">
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">App Installation</h3>
+        <div className="bg-surface-container-lowest rounded-3xl shadow-ambient p-6 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Smartphone size={24} />
+            </div>
+            <div>
+              <p className="font-bold text-on-surface text-sm">Install VendorFlow</p>
+              <p className="text-[10px] text-on-surface-variant mt-1 font-medium">
+                {isInstalled 
+                  ? 'App is already installed on your device.' 
+                  : isInstallable 
+                    ? 'Install to your home screen for offline access.'
+                    : 'Open in a supported browser (like Chrome or Safari) to install.'}
+              </p>
+            </div>
+          </div>
+          {!isInstalled && isInstallable && (
+            <button 
+              onClick={promptInstall}
+              className="px-4 py-2 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-xs shadow-ambient active:scale-95 transition-transform hover:opacity-90 shrink-0 ml-4"
+            >
+              Install
+            </button>
+          )}
+          {isInstalled && (
+            <div className="px-3 py-1.5 bg-surface-container-low text-on-surface-variant rounded-full font-bold text-xs shrink-0 ml-4">
+              Installed
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="mb-10">
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">Invoice Configuration</h3>
         <div className="bg-surface-container-lowest rounded-3xl shadow-ambient overflow-hidden">
           
           {/* Business Profile */}
           <button 
             onClick={() => setActiveModal('business')}
-            className="w-full flex items-center justify-between p-6 text-left hover:bg-surface-container-low/50 transition-colors border-b border-surface-container-low"
+            className="w-full flex items-center justify-between p-6 text-left hover:bg-surface-container-low/50 transition-colors border-b border-surface-container-low relative"
           >
             <div>
-              <span className="font-bold text-sm text-on-surface block">Business Profile</span>
+              <span className="font-bold text-sm text-on-surface flex items-center gap-2">
+                Business Profile
+                {!brandName && (
+                  <motion.span 
+                    className="w-2 h-2 bg-error rounded-full"
+                    animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                )}
+              </span>
               <span className="text-xs text-on-surface-variant mt-1">{localBrandName || 'Not set'}</span>
             </div>
             <ChevronRight size={18} className="text-on-surface-variant" />
@@ -172,13 +236,22 @@ export const SettingsScreen = () => {
             <ChevronRight size={18} className="text-on-surface-variant" />
           </button>
 
-          {/* Payment Details */}
+          {/* Payment & Tax Details */}
           <button 
             onClick={() => setActiveModal('payment')}
-            className="w-full flex items-center justify-between p-6 text-left hover:bg-surface-container-low/50 transition-colors"
+            className="w-full flex items-center justify-between p-6 text-left hover:bg-surface-container-low/50 transition-colors relative"
           >
             <div>
-              <span className="font-bold text-sm text-on-surface block">Payment Details</span>
+              <span className="font-bold text-sm text-on-surface flex items-center gap-2">
+                Payment & Tax Details
+                {!bankDetails && (
+                  <motion.span 
+                    className="w-2 h-2 bg-error rounded-full"
+                    animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  />
+                )}
+              </span>
               <span className="text-xs text-on-surface-variant mt-1">{bankName || 'Not set'}</span>
             </div>
             <ChevronRight size={18} className="text-on-surface-variant" />
@@ -231,6 +304,18 @@ export const SettingsScreen = () => {
                       <p className="text-[10px] text-on-surface-variant mt-2 ml-2 font-medium">This will appear on your invoices and receipts.</p>
                     </div>
 
+                    <div>
+                      <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Tax Identification Number (Optional)</label>
+                      <input 
+                        type="text" 
+                        value={localVendorTaxId}
+                        onChange={(e) => setLocalVendorTaxId(e.target.value)}
+                        placeholder="e.g. TIN, VAT No." 
+                        className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
+                      />
+                      <p className="text-[10px] text-on-surface-variant mt-2 ml-2 font-medium">Required for B2B compliance in some regions.</p>
+                    </div>
+
                     {isPremium && (
                       <div>
                         <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Brand Logo (Premium)</label>
@@ -273,16 +358,33 @@ export const SettingsScreen = () => {
                   </div>
                 )}
                 {activeModal === 'template' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6" style={{ '--theme-hue': localTemplateConfig.hue || 135 } as React.CSSProperties}>
                     <div>
-                      <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2 flex items-center gap-2"><Palette size={12} /> Brand Color</label>
+                      <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2 flex items-center gap-2"><Palette size={12} /> Template Theme Hue</label>
+                      <div className="px-2">
+                        <input 
+                          type="range" 
+                          min="0" 
+                          max="360" 
+                          value={localTemplateConfig.hue || 135} 
+                          onChange={(e) => setLocalTemplateConfig({ ...localTemplateConfig, hue: Number(e.target.value) })}
+                          className="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer"
+                          style={{
+                            background: `linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)`
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="pt-2">
+                      <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2 flex items-center gap-2"><Palette size={12} /> Invoice Color</label>
                       <div className="flex gap-3 px-2">
-                        {colors.map(color => (
+                        {colors.map((color, index) => (
                           <button
                             key={color}
                             onClick={() => setLocalTemplateConfig({ ...localTemplateConfig, color })}
                             className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform ${localTemplateConfig.color === color ? 'scale-110 ring-2 ring-offset-2 ring-primary' : 'hover:scale-110'}`}
                             style={{ backgroundColor: color }}
+                            title={index === 0 ? "Primary Color" : "Secondary Color"}
                           >
                             {localTemplateConfig.color === color && <Check size={14} color="white" />}
                           </button>
@@ -297,7 +399,7 @@ export const SettingsScreen = () => {
                             key={style}
                             onClick={() => {
                               if (['bold', 'elegant', 'corporate'].includes(style) && !isPremium) {
-                                alert('Please upgrade to Premium to use this template.');
+                                window.dispatchEvent(new Event('open_subscription_modal'));
                                 return;
                               }
                               setLocalTemplateConfig({ ...localTemplateConfig, style });
@@ -316,36 +418,105 @@ export const SettingsScreen = () => {
                   </div>
                 )}
                 {activeModal === 'payment' && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Bank Name</label>
-                      <input 
-                        type="text" 
-                        value={bankName}
-                        onChange={(e) => setBankName(e.target.value)}
-                        placeholder="e.g. Chase Bank, GTBank" 
-                        className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
-                      />
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <h4 className="text-xs font-bold text-on-surface-variant uppercase tracking-widest ml-2">Bank Details</h4>
+                      <div>
+                        <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Bank Name</label>
+                        <input 
+                          type="text" 
+                          value={bankName}
+                          onChange={(e) => setBankName(e.target.value)}
+                          placeholder="e.g. Chase Bank, GTBank" 
+                          className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Account Name</label>
+                        <input 
+                          type="text" 
+                          value={accountName}
+                          onChange={(e) => setAccountName(e.target.value)}
+                          placeholder="e.g. John Doe" 
+                          className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Account Number</label>
+                        <input 
+                          type="text" 
+                          value={accountNumber}
+                          onChange={(e) => setAccountNumber(e.target.value)}
+                          placeholder="e.g. 0123456789" 
+                          className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-mono font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Account Name</label>
-                      <input 
-                        type="text" 
-                        value={accountName}
-                        onChange={(e) => setAccountName(e.target.value)}
-                        placeholder="e.g. John Doe" 
-                        className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Account Number</label>
-                      <input 
-                        type="text" 
-                        value={accountNumber}
-                        onChange={(e) => setAccountNumber(e.target.value)}
-                        placeholder="e.g. 0123456789" 
-                        className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-mono font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
-                      />
+                    
+                    <div className="space-y-4 pt-4 border-t border-surface-container-low">
+                      <div className="flex items-center justify-between ml-2">
+                        <h4 className="text-xs font-bold text-on-surface-variant uppercase tracking-widest">Tax / VAT Configuration</h4>
+                        <button
+                          onClick={() => setLocalTaxConfig({ ...localTaxConfig, enabled: !localTaxConfig.enabled })}
+                          className={`w-12 h-6 rounded-full transition-colors flex items-center px-1 ${localTaxConfig.enabled ? 'bg-primary' : 'bg-surface-container-high'}`}
+                        >
+                          <motion.div
+                            animate={{ x: localTaxConfig.enabled ? 24 : 0 }}
+                            className="w-4 h-4 rounded-full bg-white shadow-sm"
+                          />
+                        </button>
+                      </div>
+                      
+                      <AnimatePresence>
+                        {localTaxConfig.enabled && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-4 overflow-hidden"
+                          >
+                            <div className="grid grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Tax Label</label>
+                                <input 
+                                  type="text" 
+                                  value={localTaxConfig.label}
+                                  onChange={(e) => setLocalTaxConfig({ ...localTaxConfig, label: e.target.value })}
+                                  placeholder="e.g. VAT, GST, Tax" 
+                                  className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-[10px] font-bold text-on-surface-variant uppercase tracking-widest mb-2 ml-2">Rate (%)</label>
+                                <input 
+                                  type="number" 
+                                  step="0.1"
+                                  min="0"
+                                  value={localTaxConfig.rate}
+                                  onChange={(e) => setLocalTaxConfig({ ...localTaxConfig, rate: parseFloat(e.target.value) || 0 })}
+                                  placeholder="e.g. 7.5" 
+                                  className="w-full bg-surface-container-low focus:bg-surface-container-lowest border-none rounded-full text-sm font-bold text-on-surface focus:ring-1 focus:ring-primary/20 px-5 py-3.5 outline-none transition-all"
+                                />
+                              </div>
+                            </div>
+                            <div className="flex items-center justify-between bg-surface-container-low p-4 rounded-2xl">
+                              <div>
+                                <p className="text-sm font-bold text-on-surface">Tax Inclusive Pricing</p>
+                                <p className="text-[10px] text-on-surface-variant mt-0.5">Catalog prices already include tax</p>
+                              </div>
+                              <button
+                                onClick={() => setLocalTaxConfig({ ...localTaxConfig, inclusive: !localTaxConfig.inclusive })}
+                                className={`w-12 h-6 rounded-full transition-colors flex items-center px-1 ${localTaxConfig.inclusive ? 'bg-primary' : 'bg-surface-container-high'}`}
+                              >
+                                <motion.div
+                                  animate={{ x: localTaxConfig.inclusive ? 24 : 0 }}
+                                  className="w-4 h-4 rounded-full bg-white shadow-sm"
+                                />
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </div>
                 )}
@@ -355,7 +526,7 @@ export const SettingsScreen = () => {
               <div className="p-6 border-t border-surface-container-low bg-surface-container-lowest">
                 <button 
                   onClick={() => { handleSaveDetails(); setActiveModal(null); }}
-                  className="w-full py-4 bg-primary text-on-primary rounded-full font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-ambient shadow-primary/20"
+                  className="w-full py-4 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-ambient shadow-primary/20 hover:opacity-90"
                 >
                   {isSaved ? <Check size={18} strokeWidth={2.5} /> : <Save size={18} strokeWidth={2.5} />}
                   {isSaved ? 'Saved!' : 'Save Details'}
@@ -409,6 +580,41 @@ export const SettingsScreen = () => {
           </div>
         </div>
       </section>
+
+      <AnimatePresence>
+        {showCancelModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-surface-container-lowest rounded-3xl p-6 w-full max-w-sm shadow-ambient"
+            >
+              <h3 className="text-xl font-bold text-on-surface mb-2">Cancel Premium?</h3>
+              <p className="text-on-surface-variant text-sm mb-6">
+                Are you sure you want to cancel your premium subscription? You will lose access to professional tools and watermarks will be re-enabled.
+              </p>
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => setShowCancelModal(false)}
+                  className="flex-1 py-3 bg-surface-container-low text-on-surface rounded-full font-bold text-sm active:scale-95 transition-transform"
+                >
+                  Keep Premium
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsPremium(false);
+                    setShowCancelModal(false);
+                  }}
+                  className="flex-1 py-3 bg-error text-on-error rounded-full font-bold text-sm active:scale-95 transition-transform"
+                >
+                  Cancel Plan
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
