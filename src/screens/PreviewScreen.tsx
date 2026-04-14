@@ -8,7 +8,7 @@ import { TemplateRenderer } from '../components/TemplateRenderer';
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useAdSystem } from '../hooks/useAdSystem';
-import { MockAdVideo } from '../components/MockAdVideo';
+import { TimedInterstitialAd } from '../components/TimedInterstitialAd';
 import { track } from '../utils/analytics';
 
 export const PreviewScreen = () => {
@@ -316,7 +316,7 @@ export const PreviewScreen = () => {
       </div>
 
       {showAd && (
-        <MockAdVideo 
+        <TimedInterstitialAd 
           type="rewarded"
           onClose={() => setShowAd(false)}
           onComplete={() => {

@@ -7,7 +7,7 @@ import { Share2, CheckCircle2, Home, Loader2 } from 'lucide-react';
 import { toCanvas } from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import { useAdSystem } from '../hooks/useAdSystem';
-import { MockAdVideo } from '../components/MockAdVideo';
+import { TimedInterstitialAd } from '../components/TimedInterstitialAd';
 import { TemplateRenderer } from '../components/TemplateRenderer';
 import { track } from '../utils/analytics';
 
@@ -322,7 +322,7 @@ export const ReceiptScreen = () => {
       </div>
 
       {showAd && (
-        <MockAdVideo 
+        <TimedInterstitialAd 
           type="rewarded"
           onClose={() => setShowAd(false)}
           onComplete={() => {

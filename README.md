@@ -24,6 +24,8 @@ VendorFlow is a premium, mobile-first pocket office designed for vendors, freela
 
 ## Recent Improvements
 
+- **Premium Experience:** Audited and updated the ad system to ensure 100% ad suppression for premium users at the component level, preventing unnecessary network requests and rendering.
+- **Monetization & AdSense:** Fully integrated Google AdSense with native and interstitial ad placements. Implemented Ad Blocking Recovery messaging via Google Funding Choices, complete with custom error protection scripts and strict Content Security Policy (CSP) configurations to ensure seamless delivery without disrupting the user experience.
 - **Analytics:** Implemented visual charts for Cash Flow Forecast and Revenue Overview with improved tooltip readability.
 - **UI Polish:** Optimized layout for invoice lists to handle long customer names and invoice numbers, ensuring proper truncation and spacing.
 - **Payment Details:** Standardized "Acct number" labeling across all invoice templates.

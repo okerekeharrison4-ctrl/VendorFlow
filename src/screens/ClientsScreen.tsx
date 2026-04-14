@@ -5,7 +5,7 @@ import { Plus, Search, Edit2, Trash2, Mail, Phone } from 'lucide-react';
 import { generateId } from '../utils/helpers';
 import { SwipeableItem } from '../components/SwipeableItem';
 import { useGestureGuide } from '../hooks/useGestureGuide';
-import { MockNativeAd } from '../components/MockNativeAd';
+import { AdSenseAd } from '../components/AdSenseAd';
 
 const container = {
   hidden: { opacity: 0 },
@@ -231,14 +231,14 @@ export const ClientsScreen = () => {
                     </motion.div>
                     {index === 1 && (
                       <motion.div variants={itemVariant}>
-                        <MockNativeAd />
+                        <AdSenseAd slot="8155163129" format="fluid" layoutKey="-ef+6k-30-ac+ty" />
                       </motion.div>
                     )}
                   </React.Fragment>
                 ))}
                 {filteredClients.length < 2 && (
                   <motion.div variants={itemVariant}>
-                    <MockNativeAd />
+                    <AdSenseAd slot="8155163129" format="fluid" layoutKey="-ef+6k-30-ac+ty" />
                   </motion.div>
                 )}
               </>

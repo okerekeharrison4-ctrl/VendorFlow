@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { formatCurrency, calculateInvoiceTotal } from '../utils/helpers';
 import { motion } from 'motion/react';
 import { FileText, Plus, TrendingUp, AlertCircle } from 'lucide-react';
+import { AdSenseAd } from '../components/AdSenseAd';
 
 export const HomeScreen = () => {
   const { invoices, currency } = useStore();
@@ -89,32 +90,41 @@ export const HomeScreen = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {recentInvoices.map(invoice => (
-              <div 
-                key={invoice.id}
-                onClick={() => navigate(`/${invoice.status === 'paid' ? 'receipt' : 'preview'}/${invoice.id}`)}
-                className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between gap-4 group border border-transparent hover:border-surface-variant/50"
-              >
-                <div className="min-w-0">
-                  <h4 className="font-bold text-on-surface text-sm mb-1 group-hover:text-primary transition-colors truncate">{invoice.customerName}</h4>
-                  <p className="text-on-surface-variant text-[10px] font-mono uppercase tracking-wider truncate">{invoice.invoiceNumber}</p>
+            {recentInvoices.map((invoice, index) => (
+              <React.Fragment key={invoice.id}>
+                <div 
+                  onClick={() => navigate(`/${invoice.status === 'paid' ? 'receipt' : 'preview'}/${invoice.id}`)}
+                  className="bg-surface-container-lowest p-5 rounded-3xl shadow-ambient hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between gap-4 group border border-transparent hover:border-surface-variant/50"
+                >
+                  <div className="min-w-0">
+                    <h4 className="font-bold text-on-surface text-sm mb-1 group-hover:text-primary transition-colors truncate">{invoice.customerName}</h4>
+                    <p className="text-on-surface-variant text-[10px] font-mono uppercase tracking-wider truncate">{invoice.invoiceNumber}</p>
+                  </div>
+                  <div className="text-right flex flex-col items-end shrink-0">
+                    <span className="font-mono font-black text-on-surface text-base tracking-tight truncate max-w-full" title={formatCurrency(calculateInvoiceTotal(invoice), currency.symbol)}>
+                      {formatCurrency(calculateInvoiceTotal(invoice), currency.symbol)}
+                    </span>
+                    <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mt-2 ${
+                      invoice.status === 'paid' 
+                        ? 'bg-gradient-to-r from-secondary-container to-secondary-container-heavy text-on-secondary-container' 
+                        : 'bg-surface-container-low text-on-surface-variant'
+                    }`}>
+                      {invoice.status}
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right flex flex-col items-end shrink-0">
-                  <span className="font-mono font-black text-on-surface text-base tracking-tight truncate max-w-full" title={formatCurrency(calculateInvoiceTotal(invoice), currency.symbol)}>
-                    {formatCurrency(calculateInvoiceTotal(invoice), currency.symbol)}
-                  </span>
-                  <span className={`text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mt-2 ${
-                    invoice.status === 'paid' 
-                      ? 'bg-gradient-to-r from-secondary-container to-secondary-container-heavy text-on-secondary-container' 
-                      : 'bg-surface-container-low text-on-surface-variant'
-                  }`}>
-                    {invoice.status}
-                  </span>
-                </div>
-              </div>
+                {index === 1 && (
+                  <AdSenseAd slot="8155163129" format="fluid" layoutKey="-ef+6k-30-ac+ty" />
+                )}
+              </React.Fragment>
             ))}
           </div>
         )}
+      </section>
+
+      {/* Display Ad Unit */}
+      <section className="mt-8">
+        <AdSenseAd slot="2175031953" format="auto" />
       </section>
     </motion.div>
   );

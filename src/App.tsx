@@ -17,7 +17,7 @@ import { AnalyticsScreen } from './screens/AnalyticsScreen';
 import { AnimatePresence, motion } from 'motion/react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAdSystem } from './hooks/useAdSystem';
-import { MockAdVideo } from './components/MockAdVideo';
+import { TimedInterstitialAd } from './components/TimedInterstitialAd';
 import { SubscriptionModal } from './components/SubscriptionModal';
 
 const AppContent = () => {
@@ -187,7 +187,7 @@ const AppContent = () => {
         </Layout>
 
         {showInterstitial && (
-          <MockAdVideo 
+          <TimedInterstitialAd 
             type="interstitial" 
             onClose={() => setShowInterstitial(false)} 
             onComplete={() => {}} 

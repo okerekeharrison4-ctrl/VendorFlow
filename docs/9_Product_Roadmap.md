@@ -11,6 +11,7 @@
 * ✅ Cash Flow Forecasting based on payment history.
 * ✅ Command Palette (Cmd+K) for quick navigation.
 * ✅ PWA (Progressive Web App) installation support.
+* ✅ Google AdSense Integration (Native & Interstitial ads) with Ad Blocking Recovery and Error Protection.
 
 ## Q4 2026: Growth & Retention
 * 🔄 **Cloud Sync:** Optional user accounts (Firebase Auth) to sync data across multiple devices.

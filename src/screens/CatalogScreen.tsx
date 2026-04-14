@@ -3,7 +3,7 @@ import { useStore } from '../store/StoreContext';
 import { motion } from 'motion/react';
 import { Plus, Search, Edit2, Trash2, Package } from 'lucide-react';
 import { formatCurrency, generateId } from '../utils/helpers';
-import { MockNativeAd } from '../components/MockNativeAd';
+import { AdSenseAd } from '../components/AdSenseAd';
 import { SwipeableItem } from '../components/SwipeableItem';
 import { useGestureGuide } from '../hooks/useGestureGuide';
 
@@ -205,7 +205,7 @@ export const CatalogScreen = () => {
                     {/* Insert Native Ad after the 2nd item, or at the end if fewer than 2 items */}
                     {index === 1 && (
                       <motion.div variants={itemVariant}>
-                        <MockNativeAd />
+                        <AdSenseAd slot="8155163129" format="fluid" layoutKey="-ef+6k-30-ac+ty" />
                       </motion.div>
                     )}
                   </React.Fragment>
@@ -214,7 +214,7 @@ export const CatalogScreen = () => {
                 {/* If there are less than 2 items, still show the ad at the bottom */}
                 {filteredItems.length < 2 && (
                   <motion.div variants={itemVariant}>
-                    <MockNativeAd />
+                    <AdSenseAd slot="8155163129" format="fluid" layoutKey="-ef+6k-30-ac+ty" />
                   </motion.div>
                 )}
               </>
