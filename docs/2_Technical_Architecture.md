@@ -25,7 +25,7 @@ VendorFlow is a client-side, Single Page Application (SPA) built with React. It 
 
 ## 5. Monetization & Ads Integration
 * **Premium State:** Managed locally, unlocks custom logos and removes watermarks.
-* **Ad System:** Custom hook (`useAdSystem`) manages rewarded video state, tracking "watched" status to temporarily unlock premium features (watermark removal) for specific receipts.
+* **Ad System:** Custom hook (`useAdSystem`) manages rewarded video state. The application also integrates Google AdSense for banner and interstitial ads, configured via `index.html` and `ads.txt`.
 
 ## 6. Deployment
 * Static site hosting (e.g., Firebase Hosting, Vercel, or Google Cloud Run via Nginx).
