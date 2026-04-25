@@ -2,30 +2,29 @@
 
 VendorFlow is a premium, mobile-first pocket office designed for vendors, freelancers, and small business owners. It provides a seamless experience for managing invoices, clients, product catalogs, and business analytics.
 
-## Features
+## Core Features
 
+- **Cloud Sync & Security:** Fully integrated with Firebase (Authentication & Firestore) for live real-time sync. Stringent DevTools and inspect console lockdown implemented; zero PII stored in local browser storage.
 - **Invoice Management:** Create, preview, and share professional invoices (PDF, Image, WhatsApp, Email). Easily track 'Paid' and 'Unpaid' invoices with intuitive filtering.
 - **Client & Catalog Management:** Maintain a database of your customers and products/services for quick invoice generation.
 - **Business Analytics:** Track your sales performance, revenue, and top-selling items with beautiful charts and downloadable reports (CSV/PDF).
 - **Premium "Line & Leaf" Aesthetic:** A polished, earthy, and professional design system featuring vibrant gradients, smooth layout morphing, and staggered animations.
 - **Global Command Palette (Cmd+K):** A searchable, keyboard-driven interface for rapid navigation and action execution.
-- **Ad Integrations:** Seamlessly integrated native and interstitial ad placements for monetization.
-- **Premium Tier:** Subscription model unlocking advanced features and removing watermarks.
 
 ## Tech Stack
 
 - **React 18+** with **Vite**
 - **TypeScript**
+- **Firebase:** Authentication & Firestore Database
 - **Tailwind CSS** for styling
 - **Framer Motion** for fluid animations
 - **Lucide React** for iconography
 - **Recharts** for data visualization
 - **html2canvas & jsPDF** for document generation
 
-## Recent Improvements
+## Recent Security & Architecture Improvements
 
+- **Firestore Integration:** Data seamlessly synchronizes with Google Cloud.
+- **Inspect Console Hack-Proofing:** Eliminated client-side persistence (LocalStorage/IndexedDB) for PII (Invoices, Customers, Catalogs) preventing data scraping or modification via browser DevTools. In-memory data is instantly purged upon user logout.
+- **Robust Security Rules:** Implemented Firebase Security Rules that strictly lock down reads/writes matching the `request.auth.uid`.
 - **Premium Experience:** Audited and updated the ad system to ensure 100% ad suppression for premium users at the component level, preventing unnecessary network requests and rendering.
-- **Monetization & AdSense:** Fully integrated Google AdSense with native and interstitial ad placements. Implemented Ad Blocking Recovery messaging via Google Funding Choices, complete with custom error protection scripts and strict Content Security Policy (CSP) configurations to ensure seamless delivery without disrupting the user experience.
-- **Analytics:** Implemented visual charts for Cash Flow Forecast and Revenue Overview with improved tooltip readability.
-- **UI Polish:** Optimized layout for invoice lists to handle long customer names and invoice numbers, ensuring proper truncation and spacing.
-- **Payment Details:** Standardized "Acct number" labeling across all invoice templates.

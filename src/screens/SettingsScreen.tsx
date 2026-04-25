@@ -4,10 +4,22 @@ import { CURRENCIES, TemplateConfig } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
 import { Check, Save, Palette, LayoutTemplate, Download, Upload, ChevronRight, X, Smartphone } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
+import { Logo } from '../components/Logo';
+
+import { signInWithGoogle, signOutUser } from '../services/firebase';
+import { LogIn, LogOut, Cloud } from 'lucide-react';
 
 export const SettingsScreen = () => {
-  const { currency, setCurrency, bankDetails, setBankDetails, brandName, setBrandName, vendorTaxId, setVendorTaxId, templateConfig, setTemplateConfig, taxConfig, setTaxConfig, invoices, clients, catalog, theme, toggleTheme, isPremium, setIsPremium, logoUrl, setLogoUrl } = useStore();
-  const { isInstallable, isInstalled, promptInstall } = usePWAInstall();
+  const { currentUser, currency, setCurrency, bankDetails, setBankDetails, brandName, setBrandName, vendorTaxId, setVendorTaxId, templateConfig, setTemplateConfig, taxConfig, setTaxConfig, invoices, clients, catalog, theme, toggleTheme, isPremium, setIsPremium, logoUrl, setLogoUrl } = useStore();
+  const { isInstallable, isInstalled, isIOS, promptInstall } = usePWAInstall();
+  const [isInstalling, setIsInstalling] = useState(false);
+
+  const handleInstall = async () => {
+    setIsInstalling(true);
+    await promptInstall();
+    // Reset state after prompt is handled
+    setIsInstalling(false);
+  };
 
   const [localBrandName, setLocalBrandName] = useState(brandName);
   const [localVendorTaxId, setLocalVendorTaxId] = useState(vendorTaxId);
@@ -104,6 +116,38 @@ export const SettingsScreen = () => {
       </section>
 
       <section className="mb-10">
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">Cloud Sync</h3>
+        <div className="bg-surface-container-lowest rounded-3xl shadow-ambient p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+           <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <Cloud size={24} />
+            </div>
+            <div>
+              <p className="font-bold text-on-surface text-sm">Account & Sync</p>
+              <p className="text-[10px] text-on-surface-variant mt-1 font-medium">
+                {currentUser ? `Logged in as ${currentUser.email}` : 'Sign in to sync your data across devices.'}
+              </p>
+            </div>
+          </div>
+          {currentUser ? (
+             <button 
+               onClick={signOutUser}
+               className="w-full sm:w-auto px-6 py-3 bg-surface-container-low text-on-surface rounded-full font-bold text-sm shrink-0 flex items-center justify-center gap-2 hover:bg-surface-container"
+             >
+               <LogOut size={18} /> Sign Out
+             </button>
+          ) : (
+             <button 
+               onClick={signInWithGoogle}
+               className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-sm shadow-ambient active:scale-95 transition-transform hover:opacity-90 shrink-0 flex items-center justify-center gap-2"
+             >
+               <LogIn size={18} /> Sign In
+             </button>
+          )}
+        </div>
+      </section>
+
+      <section className="mb-10">
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">Premium</h3>
         <div className="bg-surface-container-lowest rounded-3xl shadow-ambient p-6 space-y-4">
           <div className="flex items-center justify-between">
@@ -167,35 +211,50 @@ export const SettingsScreen = () => {
 
       <section className="mb-10">
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant mb-4 ml-2">App Installation</h3>
-        <div className="bg-surface-container-lowest rounded-3xl shadow-ambient p-6 flex items-center justify-between">
+        <div className="bg-gradient-to-br from-primary-container to-primary-container-heavy rounded-3xl shadow-ambient p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 border border-primary/20 relative z-10">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <Smartphone size={24} />
+            <div className="w-14 h-14 rounded-2xl bg-surface-container-lowest shadow-sm flex items-center justify-center shrink-0 overflow-hidden p-2">
+              <Logo size={48} variant="icon" />
             </div>
-            <div>
-              <p className="font-bold text-on-surface text-sm">Install VendorFlow</p>
-              <p className="text-[10px] text-on-surface-variant mt-1 font-medium">
+            <div className="min-w-0">
+              <p className="font-bold text-on-primary-container text-base">Install VendorFlow</p>
+              <p className="text-xs text-on-primary-container/80 mt-1 font-medium leading-relaxed">
                 {isInstalled 
-                  ? 'App is already installed on your device.' 
-                  : isInstallable 
-                    ? 'Install to your home screen for offline access.'
-                    : 'Open in a supported browser (like Chrome or Safari) to install.'}
+                  ? 'App is already installed and ready for offline use.' 
+                  : isIOS 
+                    ? 'Tap the Share icon and select "Add to Home Screen" to install.'
+                    : isInstallable 
+                      ? 'Add to home screen for faster access and offline capabilities.'
+                      : 'Open in Safari or Chrome to enable home screen installation.'}
               </p>
             </div>
           </div>
-          {!isInstalled && isInstallable && (
-            <button 
-              onClick={promptInstall}
-              className="px-4 py-2 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-xs shadow-ambient active:scale-95 transition-transform hover:opacity-90 shrink-0 ml-4"
-            >
-              Install
-            </button>
-          )}
-          {isInstalled && (
-            <div className="px-3 py-1.5 bg-surface-container-low text-on-surface-variant rounded-full font-bold text-xs shrink-0 ml-4">
-              Installed
-            </div>
-          )}
+          <div className="w-full sm:w-auto flex flex-col gap-2 shrink-0">
+            {!isInstalled && isInstallable && (
+              <button 
+                onClick={handleInstall}
+                disabled={isInstalling}
+                className="w-full sm:w-auto px-6 py-3 bg-primary text-on-primary rounded-full font-bold text-sm shadow-ambient active:scale-95 transition-all hover:opacity-90 disabled:opacity-50 disabled:scale-100"
+              >
+                {isInstalling ? 'Installing...' : 'Install Now'}
+              </button>
+            )}
+            {isInstalled && (
+              <div className="w-full sm:w-auto px-6 py-3 bg-primary/20 text-primary rounded-full font-bold text-sm shrink-0 text-center border border-primary/20">
+                Already Installed
+              </div>
+            )}
+            {!isInstalled && !isInstallable && isIOS && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-2xl border border-primary/20">
+                <div className="flex -space-x-1">
+                  <div className="w-6 h-6 rounded-md bg-surface-container-lowest flex items-center justify-center border border-primary/20">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                  </div>
+                </div>
+                <p className="text-[10px] font-bold text-primary uppercase tracking-tight">Tap Share → Add to Home</p>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -262,7 +321,7 @@ export const SettingsScreen = () => {
       {/* Modals */}
       <AnimatePresence>
         {activeModal && (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6">
+          <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 sm:p-6">
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 

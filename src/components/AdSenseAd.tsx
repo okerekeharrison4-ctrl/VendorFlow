@@ -17,7 +17,8 @@ export const AdSenseAd: React.FC<AdSenseAdProps> = ({ slot, format = 'auto', lay
     if (!isLoaded.current && !isPremium) {
       try {
         isLoaded.current = true;
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+        (window as any).adsbygoogle.push({});
       } catch (e: any) {
         if (!e.message?.includes('already have ads')) {
           console.error('AdSense error:', e);
