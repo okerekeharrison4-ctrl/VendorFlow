@@ -14,6 +14,21 @@ export const SettingsScreen = () => {
   const { isInstallable, isInstalled, isIOS, promptInstall } = usePWAInstall();
   const [isInstalling, setIsInstalling] = useState(false);
 
+  const [authError, setAuthError] = useState<string | null>(null);
+
+  const handleSignIn = async () => {
+    try {
+      setAuthError(null);
+      await signInWithGoogle();
+    } catch (error: any) {
+      if (error?.code === 'auth/unauthorized-domain') {
+        setAuthError('Domain not authorized. Please add this URL to Firebase Auth Authorized Domains.');
+      } else {
+        setAuthError(error?.message || 'Wait, failed to sign in. Check console.');
+      }
+    }
+  };
+
   const handleInstall = async () => {
     setIsInstalling(true);
     await promptInstall();
@@ -137,12 +152,17 @@ export const SettingsScreen = () => {
                <LogOut size={18} /> Sign Out
              </button>
           ) : (
-             <button 
-               onClick={signInWithGoogle}
-               className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-sm shadow-ambient active:scale-95 transition-transform hover:opacity-90 shrink-0 flex items-center justify-center gap-2"
-             >
-               <LogIn size={18} /> Sign In
-             </button>
+             <div className="flex flex-col items-end gap-2 w-full sm:w-auto shrink-0">
+               <button 
+                 onClick={handleSignIn}
+                 className="w-full px-6 py-3 bg-gradient-to-r from-primary to-primary-heavy text-on-primary rounded-full font-bold text-sm shadow-ambient active:scale-95 transition-transform hover:opacity-90 flex items-center justify-center gap-2"
+               >
+                 <LogIn size={18} /> Sign In
+               </button>
+               {authError && (
+                 <p className="text-[10px] text-error font-medium max-w-[200px] text-right">{authError}</p>
+               )}
+             </div>
           )}
         </div>
       </section>
