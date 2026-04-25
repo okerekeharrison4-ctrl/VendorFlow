@@ -153,6 +153,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       // Load non-sensitive preferences from localStorage only
       const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'light';
       setThemeState(savedTheme);
+      if (localStorage.getItem('vendorflow_onboarding_completed') === 'true') {
+        setHasCompletedOnboarding(true);
+      }
       setIsLoading(false);
       
       // Cleanup legacy encrypted data that might be leaking sensitive info
@@ -290,6 +293,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   const completeOnboarding = async () => {
     setHasCompletedOnboarding(true);
+    localStorage.setItem('vendorflow_onboarding_completed', 'true');
     if (currentUser) {
        try {
          await setDoc(doc(db, 'users', currentUser.uid), { hasCompletedOnboarding: true, updatedAt: Date.now(), uid: currentUser.uid, createdAt: Date.now(), email: currentUser.email || '' }, { merge: true });

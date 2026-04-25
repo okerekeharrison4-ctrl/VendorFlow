@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, isSupported, logEvent } from 'firebase/analytics';
 import firebaseConfig from '../../firebase-applet-config.json';
@@ -34,6 +34,28 @@ export const signInWithGoogle = async () => {
     return result.user;
   } catch (error) {
     console.error("Error signing in with Google", error);
+    throw error;
+  }
+};
+
+export const signInOrSignUpWithEmail = async (email: string, password: string) => {
+  try {
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    await logAppEvent('login', { method: 'email' });
+    return result.user;
+  } catch (error: any) {
+    // If user not found, create them
+    if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+      try {
+        const createResult = await createUserWithEmailAndPassword(auth, email, password);
+        await logAppEvent('signup', { method: 'email' });
+        return createResult.user;
+      } catch (createError) {
+        console.error("Error creating user with Email", createError);
+        throw createError;
+      }
+    }
+    console.error("Error signing in with Email", error);
     throw error;
   }
 };
