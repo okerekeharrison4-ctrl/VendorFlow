@@ -15,7 +15,7 @@ VendorFlow is a premium, mobile-first pocket office designed for vendors, freela
 
 - **React 18+** with **Vite**
 - **TypeScript**
-- **Firebase:** Authentication & Firestore Database
+- **Firebase:** Authentication (Google Sign-In & Email/Password) & Firestore Database
 - **Tailwind CSS** for styling
 - **Framer Motion** for fluid animations
 - **Lucide React** for iconography

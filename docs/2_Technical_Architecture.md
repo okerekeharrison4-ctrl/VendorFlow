@@ -7,7 +7,7 @@
 - **State Management**: React Context (`StoreContext.tsx`) syncing directly with Firebase listeners.
 
 ## Backend & Database
-- **Platform**: Firebase (Firestore for database, Firebase Auth for Identity).
+- **Platform**: Firebase (Firestore for database, Firebase Auth for Identity via Google Sign-In and Email/Password).
 - **Data Model**:
   - `users/{userId}`: Profile data, preferences, taxonomy.
   - `users/{userId}/invoices/{invoiceId}`: Secure invoice records.
